@@ -1,0 +1,28 @@
+The current working directory has the following command templates available.
+You can get any of these commands by using the `get_command` tool.
+
+{{#each commands}}
+## {{{@key}}}
+
+{{{this.description}}}
+
+{{#if this.args}}
+Arguments:
+
+{{#each this.args}}
+- **{{{this.name}}}** (
+  {{~#if this.type~}}
+    {{{this.type}}}
+  {{~else~}}
+    string
+  {{~/if~}}
+  {{~#if this.required~}}
+    , required
+  {{~/if~}}
+  ): {{{this.description}}}
+{{/each}}
+{{else}}
+No arguments required.
+{{/if}}
+
+{{/each}}

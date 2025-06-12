@@ -3,18 +3,20 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 import { parse } from 'yaml';
-import { readFileSync } from 'fs';
+import { access, constants, readFile } from 'fs/promises';
+import { join } from 'path';
 
-import renderExecute from '@/prompts/execute.hbs';
+import renderExploreCommands from '@/prompts/explore_commands.hbs';
+import renderCommand from '@/prompts/command.hbs';
+
+const COMMANDS_YAML = 'commands.yaml';
 
 const server = new McpServer({
   name: 'MCP Server of collection of handful commands',
   version: '1.0.0',
 });
 
-const [commandsFile] = process.argv.slice(2);
-
-const commands = parse(readFileSync(commandsFile!, 'utf8')) as Record<string, {
+interface CommandSpec {
   description: string;
   args?: {
     name: string;
@@ -23,31 +25,78 @@ const commands = parse(readFileSync(commandsFile!, 'utf8')) as Record<string, {
     required?: boolean;
   }[];
   command: string;
-}>;
+}
 
-for (const [name, command] of Object.entries(commands)) {
-  server.tool(name, command.description, {
-    ...Object.fromEntries((command.args ?? []).map((arg) => [
-      arg.name,
-      z.string().describe(arg.description)
-    ])),
-  }, (args: Record<string, string>) => {
-    const cmd = command.command.replace(/\{([^\}]+)\}/g, (_, key) => {
-      if (key in args) {
-        return args[key]!;
-      } else {
-        throw new Error(`Missing argument: ${key}`);
-      }
-    });
+async function readCommands(file: string): Promise<Record<string, CommandSpec>> {
+  try {
+    await access(file, constants.R_OK);
+  } catch {
+    return {};
+  }
+
+  return parse(await readFile(file, 'utf8'));
+}
+
+function buildCommandLine(command: CommandSpec, args: Record<string, string> = {}): string {
+  return command.command.replace(/\{([^\}]+)\}/g, (_, key) => {
+    if (key in args) {
+      return args[key]!;
+    } else {
+      throw new Error(`Missing argument: ${key}`);
+    }
+  });
+}
+
+server.tool(
+  'explore_commands',
+  'Explore available commands in the current working directory that may be useful for the current project',
+  {
+    cwd: z.string().describe('The current working directory'),
+  },
+  async ({ cwd }) => {
+    const commands = await readCommands(join(cwd, COMMANDS_YAML));
+
+    if (Object.keys(commands).length === 0) {
+      return {
+        content: [{
+          type: 'text',
+          text: 'No commands found in the current working directory.',
+        }],
+      };
+    }
 
     return {
       content: [{
         type: 'text',
-        text: renderExecute({ command: cmd }),
+        text: renderExploreCommands({ commands }),
       }],
+    };
+  }
+);
+
+server.tool(
+  'get_command',
+  'Get a command to execute',
+  {
+    cwd: z.string().describe('The current working directory'),
+    command: z.string().describe('The name of the command to get'),
+    args: z.record(z.string()).optional().describe('Arguments for the command'),
+  },
+  async ({ cwd, command, args }) => {
+    const commands = await readCommands(join(cwd, COMMANDS_YAML));
+
+    if (!commands[command]) {
+      throw new Error(`Command not found: ${command}`);
     }
-  });
-}
+
+    return {
+      content: [{
+        type: 'text',
+        text: renderCommand({ command: buildCommandLine(commands[command], args) }),
+      }],
+    };
+  }
+);
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
