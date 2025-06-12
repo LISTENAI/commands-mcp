@@ -5,6 +5,8 @@ import { z } from 'zod';
 import { parse } from 'yaml';
 import { readFileSync } from 'fs';
 
+import renderExecute from '@/prompts/execute.hbs';
+
 const server = new McpServer({
   name: 'MCP Server of collection of handful commands',
   version: '1.0.0',
@@ -41,7 +43,7 @@ for (const [name, command] of Object.entries(commands)) {
     return {
       content: [{
         type: 'text',
-        text: `Please execute the commands below:\n\n\`\`\`\n${cmd}\n\`\`\``,
+        text: renderExecute({ command: cmd }),
       }],
     }
   });
