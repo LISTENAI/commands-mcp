@@ -43,7 +43,8 @@ function buildCommandLine(command: Command, args: Record<string, string> = {}): 
 
 server.tool(
   'explore_commands',
-  'Explore available commands in the current working directory that may be useful for the current project',
+  'Lists available commands in the current directory that may help with the current project.' +
+  'Always use this first to understand what actions you can take.',
   {
     cwd: z.string().describe('The current working directory'),
   },
