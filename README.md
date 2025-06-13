@@ -1,9 +1,26 @@
 commands-mcp
 ============
 
-使用命令模板构建 MCP Server。
+将你的常用命令定义为 MCP 工具，使 AI 代理可以轻松调用。
 
 ## 安装
+
+#### NPM
+
+```json
+{
+  "mcpServers": {
+    "commands":{
+      "command": "npx",
+      "args": [
+        "@listenai/commands-mcp@v1"
+      ]
+    }
+  }
+}
+```
+
+#### Docker
 
 ```json
 {
@@ -21,9 +38,11 @@ commands-mcp
 }
 ```
 
-## 示例
+## 使用
 
-推荐配合 [redhat.vscode-yaml](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) 插件使用，以便提供 YAML 字段补全和验证。
+在你的项目中创建一个 `commands.yaml` 文件，定义你的命令集合。
+
+示例：
 
 ```yaml
 # commands.yaml
@@ -57,8 +76,9 @@ commands:
   - name: zephyr_flash
     description: 将编译好的固件烧录到设备
     command: west flash
-
 ```
+
+> 推荐配合 [redhat.vscode-yaml](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) 插件使用，以便提供 YAML 字段补全和验证。
 
 ## 协议
 
