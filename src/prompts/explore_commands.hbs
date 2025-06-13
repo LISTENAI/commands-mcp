@@ -2,7 +2,7 @@ The current working directory has the following command templates available.
 You can get any of these commands by using the `get_command` tool.
 
 {{#each commands}}
-## {{{@key}}}
+## {{{this.name}}}
 
 {{{this.description}}}
 
@@ -11,11 +11,7 @@ Arguments:
 
 {{#each this.args}}
 - **{{{this.name}}}** (
-  {{~#if this.type~}}
-    {{{this.type}}}
-  {{~else~}}
-    string
-  {{~/if~}}
+  {{~{this.type}~}}
   {{~#if this.required~}}
     , required
   {{~/if~}}

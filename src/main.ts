@@ -6,6 +6,8 @@ import { parse } from 'yaml';
 import { access, constants, readFile } from 'fs/promises';
 import { join } from 'path';
 
+import { CollectionSchema, CommandSchema } from '@/commands.schema';
+
 import renderExploreCommands from '@/prompts/explore_commands.hbs';
 import renderCommand from '@/prompts/command.hbs';
 
@@ -16,28 +18,20 @@ const server = new McpServer({
   version: '1.0.0',
 });
 
-interface CommandSpec {
-  description: string;
-  args?: {
-    name: string;
-    description: string;
-    type: string;
-    required?: boolean;
-  }[];
-  command: string;
-}
+type Collection = z.infer<typeof CollectionSchema>;
+type Command = z.infer<typeof CommandSchema>;
 
-async function readCommands(file: string): Promise<Record<string, CommandSpec>> {
+async function readCommands(file: string): Promise<Collection> {
   try {
     await access(file, constants.R_OK);
   } catch {
-    return {};
+    return { commands: [] };
   }
 
-  return parse(await readFile(file, 'utf8'));
+  return CollectionSchema.parse(parse(await readFile(file, 'utf8')));
 }
 
-function buildCommandLine(command: CommandSpec, args: Record<string, string> = {}): string {
+function buildCommandLine(command: Command, args: Record<string, string> = {}): string {
   return command.command.replace(/\{([^\}]+)\}/g, (_, key) => {
     if (key in args) {
       return args[key]!;
@@ -54,9 +48,9 @@ server.tool(
     cwd: z.string().describe('The current working directory'),
   },
   async ({ cwd }) => {
-    const commands = await readCommands(join(cwd, COMMANDS_YAML));
+    const { commands } = await readCommands(join(cwd, COMMANDS_YAML));
 
-    if (Object.keys(commands).length === 0) {
+    if (commands.length === 0) {
       return {
         content: [{
           type: 'text',
@@ -83,16 +77,17 @@ server.tool(
     args: z.record(z.string()).optional().describe('Arguments for the command'),
   },
   async ({ cwd, command, args }) => {
-    const commands = await readCommands(join(cwd, COMMANDS_YAML));
+    const { commands } = await readCommands(join(cwd, COMMANDS_YAML));
+    const spec = commands.find(cmd => cmd.name === command);
 
-    if (!commands[command]) {
+    if (!spec) {
       throw new Error(`Command not found: ${command}`);
     }
 
     return {
       content: [{
         type: 'text',
-        text: renderCommand({ command: buildCommandLine(commands[command], args) }),
+        text: renderCommand({ command: buildCommandLine(spec, args) }),
       }],
     };
   }

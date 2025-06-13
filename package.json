@@ -20,7 +20,7 @@
     "prepublishOnly": "npm run build"
   },
   "files": [
-    "dist"
+    "dist/main.js"
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",
