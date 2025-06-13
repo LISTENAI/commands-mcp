@@ -5,6 +5,8 @@ import { z } from 'zod';
 import { parse } from 'yaml';
 import { readFileSync } from 'fs';
 
+import { CollectionSchema } from '@/commands.schema';
+
 const server = new McpServer({
   name: 'MCP Server of collection of handful commands',
   version: '1.0.0',
@@ -12,16 +14,7 @@ const server = new McpServer({
 
 const [commandsFile] = process.argv.slice(2);
 
-const commands = parse(readFileSync(commandsFile!, 'utf8')) as Record<string, {
-  description: string;
-  args?: {
-    name: string;
-    description: string;
-    type: string;
-    required?: boolean;
-  }[];
-  command: string;
-}>;
+const { commands } = CollectionSchema.parse(parse(readFileSync(commandsFile!, 'utf8')));
 
 for (const [name, command] of Object.entries(commands)) {
   server.tool(name, command.description, {
