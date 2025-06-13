@@ -16,6 +16,7 @@
   "bin": "dist/main.js",
   "scripts": {
     "build": "tsdown",
+    "build-schema": "tsdown src/schema-exporter.ts && node dist/schema-exporter.js > dist/schema.json",
     "dev": "tsdown -w",
     "inspector": "mcp-inspector node dist/main.js",
     "prepublishOnly": "npm run build"
@@ -36,6 +37,7 @@
     "@types/node": "^22.15.30",
     "tsdown": "^0.12.7",
     "tslib": "^2.8.1",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "zod-to-json-schema": "^3.24.5"
   }
 }
