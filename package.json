@@ -19,6 +19,7 @@
   "scripts": {
     "lint": "oxlint",
     "build": "oxlint && tsdown",
+    "build-schema": "tsdown src/schema-exporter.ts && node dist/schema-exporter.js > dist/schema.json",
     "dev": "oxlint && tsdown -w",
     "inspector": "mcp-inspector",
     "prepublishOnly": "npm run build"
@@ -49,6 +50,7 @@
     "oxlint": "^1.1.0",
     "tsdown": "^0.12.7",
     "tslib": "^2.8.1",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "zod-to-json-schema": "^3.24.5"
   }
 }

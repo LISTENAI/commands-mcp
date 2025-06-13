@@ -12,6 +12,8 @@ commands-mcp
 1. 在你的项目中创建一个 `commands.yaml` 文件，定义你的命令模板。以下是一个用于 Zephyr 项目的示例：
 
     ```yaml
+    # yaml-language-server: $schema=http://listenai.github.io/commands-mcp/schema/v1.json
+
     commands:
       zephyr_build:
         description: 编译当前 Zephyr 项目
@@ -29,6 +31,8 @@ commands-mcp
         description: 将编译好的固件烧录到设备
         command: source .venv/bin/activate && west flash
     ```
+
+    > 推荐配合 [redhat.vscode-yaml](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) 插件使用，以便提供 YAML 字段补全和验证。
 
 2. 在项目目录下运行 MCP Server：
 
