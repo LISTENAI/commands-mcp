@@ -16,7 +16,7 @@
   "bin": "dist/main.js",
   "scripts": {
     "build": "tsdown",
-    "dev": "tsdown -w",
+    "dev": "tsdown -w --on-success 'mcp-inspector node dist/main.js'",
     "prepublishOnly": "npm run build"
   },
   "files": [
@@ -28,6 +28,7 @@
     "zod": "^3.25.50"
   },
   "devDependencies": {
+    "@modelcontextprotocol/inspector": "^0.14.2",
     "@tsconfig/node22": "^22.0.2",
     "@tsconfig/strictest": "^2.0.5",
     "@types/node": "^22.15.30",
