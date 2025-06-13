@@ -9,6 +9,38 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    outputs:
+      tarball: ${{ steps.build.outputs.tarball }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and pack
+        id: build
+        run: |
+          npm run build
+          echo "tarball=$(npm pack)" >> "$GITHUB_OUTPUT"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: ${{ steps.build.outputs.tarball }}
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: build
+
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -23,11 +55,22 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name == 'push' }}
+          context: .
+          build-args: |
+            TARBALL=${{ needs.build.outputs.tarball }}
           tags: |
             ghcr.io/listenai/commands-mcp:${{ github.sha }}
             ghcr.io/listenai/commands-mcp:${{ github.ref_name }}
