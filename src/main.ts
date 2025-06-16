@@ -17,13 +17,11 @@ const [commandsFile] = process.argv.slice(2);
 const { commands } = CollectionSchema.parse(parse(readFileSync(commandsFile!, 'utf8')));
 
 for (const [name, command] of Object.entries(commands)) {
-  server.tool(name, command.description, {
-    ...Object.fromEntries((command.args ?? []).map((arg) => [
-      arg.name,
-      z.string().describe(arg.description)
-    ])),
-  }, (args: Record<string, string>) => {
-    const cmd = command.command.replace(/\{([^\}]+)\}/g, (_, key) => {
+  server.tool(name, command.description, Object.fromEntries((command.args ?? []).map((arg) => [
+    arg.name,
+    z.string().describe(arg.description)
+  ])), (args: Record<string, string>) => {
+    const cmd = command.command.replace(/\{([^}]+)\}/g, (_, key) => {
       if (key in args) {
         return args[key]!;
       } else {
