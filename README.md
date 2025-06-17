@@ -3,47 +3,66 @@ commands-mcp
 
 使用命令模板构建 MCP Server。
 
-## 安装
+## 要求
 
-```json
-{
-  "mcpServers": {
-    "commands":{
-      "command": "docker",
-      "args": [
-        "run",
-        "--rm",
-        "-i",
-        "-v", "/path/to/your/commands.yaml:/commands.yaml:ro",
-        "ghcr.io/listenai/commands-mcp:master",
-        "/commands.yaml"
-      ]
+* [Node.js](https://nodejs.org/) 版本 >= 22
+
+## 使用
+
+1. 在你的项目中创建一个 `commands.yaml` 文件，定义你的命令模板。以下是一个用于 Zephyr 项目的示例：
+
+    ```yaml
+    commands:
+      zephyr_build:
+        description: 编译当前 Zephyr 项目
+        args:
+          - name: board
+            description: 需要构建的 board identifier，如果不能从对话历史中确定，则询问用户
+            type: string
+            required: true
+          - name: source_dir
+            description: 项目源码目录，如未指定则使用当前目录
+            type: string
+        command: source .venv/bin/activate && west build -p -s {source_dir} -b {board}
+
+      zephyr_flash:
+        description: 将编译好的固件烧录到设备
+        command: source .venv/bin/activate && west flash
+    ```
+
+2. 在项目目录下运行 MCP Server：
+
+    ```
+    $ npx @listenai/commands-mcp
+    MCP Server is running at http://localhost:53163/sse
+    ```
+
+3. 将上面所输出的 URL 作为 SSE 类型的 MCP Server 填入到你的 MCP 客户端配置中。
+
+    ```json
+    {
+      "mcpServers": {
+        "commands-mcp": {
+          "type": "sse",
+          "url": "http://localhost:53163/sse"
+        }
+      }
     }
-  }
-}
-```
+    ```
 
-## 示例
+    > 如果你的客户端不支持 SSE，可以使用 [mcp-proxy](https://github.com/sparfenyuk/mcp-proxy) 或其它类似的工具转接为 STDIO。
 
-```yaml
-# commands.yaml
----
-zephyr_build:
-  description: 编译当前 Zephyr 项目
-  args:
-    - name: board
-      description: 需要构建的 board identifier，如果不能从对话历史中确定，则询问用户
-      type: string
-      required: true
-    - name: source_dir
-      description: 项目源码目录，如未指定则使用当前目录
-      type: string
-  command: source .venv/bin/activate; west build -p -s {source_dir} -b {board}
+## 配置
 
-zephyr_flash:
-  description: 将编译好的固件烧录到设备
-  command: west flash
-```
+* `commands` - 定义命令模板的列表
+  * `<name>` - 命令的 tool 名称
+    * `description` - 命令的描述
+    * `args` - 命令参数列表
+      * `name` - 参数名称
+      * `description` - 参数描述
+      * `type` - 参数类型（如 `string`, `number`, `boolean` 等），默认为 `string`
+      * `required` - 是否为必需参数
+    * `command` - 执行的命令模板，支持 `{}` 占位符替换参数
 
 ## 协议
 
