@@ -17,8 +17,9 @@
     "commands-mcp": "dist/main.js"
   },
   "scripts": {
-    "build": "tsdown",
-    "dev": "tsdown -w",
+    "lint": "oxlint",
+    "build": "oxlint && tsdown",
+    "dev": "oxlint && tsdown -w",
     "inspector": "mcp-inspector",
     "prepublishOnly": "npm run build"
   },
@@ -45,6 +46,7 @@
     "@types/color-support": "^1.1.4",
     "@types/express": "^5.0.3",
     "@types/node": "^22.15.30",
+    "oxlint": "^1.1.0",
     "tsdown": "^0.12.7",
     "tslib": "^2.8.1",
     "typescript": "^5.8.3"
