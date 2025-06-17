@@ -4,8 +4,12 @@ import type { Request } from 'express';
 import { z } from 'zod';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { execa } from 'execa';
+import { $ as $kleur, bold, green, red, white } from 'kleur/colors';
+import colorSupport from 'color-support';
 
 import { ExecuteResultSchema, type Command, type ExecuteResult } from './commands.schema';
+
+$kleur.enabled = !!colorSupport();
 
 export function createCommandTool(name: string, spec: Command) {
   @Injectable()
@@ -28,7 +32,7 @@ export function createCommandTool(name: string, spec: Command) {
         }
       });
 
-      console.log(`$ ${command}`);
+      console.log(bold(white(`$ ${command}`)));
 
       const proc = execa(command, {
         shell: true,
@@ -44,11 +48,16 @@ export function createCommandTool(name: string, spec: Command) {
         lines.push(line);
       }
 
-      console.log(`> Exit code: ${proc.exitCode}`);
+      const code = proc.exitCode ?? 0;
+      if (code == 0) {
+        console.log(bold(green('> Command executed successfully')));
+      } else {
+        console.error(bold(red(`> Command failed with exit code ${code}`)));
+      }
 
       const result: ExecuteResult = {
         command,
-        code: proc.exitCode ?? 0,
+        code,
         output: lines.join('\n'),
       };
 
