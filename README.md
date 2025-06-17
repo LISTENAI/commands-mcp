@@ -3,6 +3,8 @@ commands-mcp
 
 使用命令模板构建 MCP Server。
 
+<video src="https://github.com/user-attachments/assets/a2800f04-12f6-4c8b-8df7-fee6458739cc"></video>
+
 ## 要求
 
 * [Node.js](https://nodejs.org/) 版本 >= 22
