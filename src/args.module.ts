@@ -1,0 +1,46 @@
+import { Module, type DynamicModule } from '@nestjs/common';
+import { program } from 'commander';
+
+import pkg from '../package.json';
+
+program
+  .name('commands-mcp')
+  .description(pkg.description)
+  .version(pkg.version)
+  .option('-p, --port <number>', 'port to run the server on, 0 or omit for random port', parseInt)
+  .option('-v, --verbose', 'enable verbose logging', false)
+  .argument('[working-directory]', 'the working directory to run commands in, defaults to $PWD')
+
+program.parse();
+
+const opts = program.opts<Options>();
+const args = program.args;
+
+export interface Options {
+  port?: number;
+  verbose?: boolean;
+}
+
+export const OPTIONS_TOKEN = Symbol('OPTIONS_TOKEN');
+export const ARGUMENTS_TOKEN = Symbol('ARGUMENTS_TOKEN');
+export const WORKING_DIRECTORY_TOKEN = Symbol('WORKING_DIRECTORY_TOKEN');
+
+@Module({})
+export class ArgumentsModule {
+  static forRoot(): DynamicModule {
+    return {
+      module: ArgumentsModule,
+      providers: [
+        { provide: OPTIONS_TOKEN, useValue: opts },
+        { provide: ARGUMENTS_TOKEN, useValue: args },
+        { provide: WORKING_DIRECTORY_TOKEN, useValue: args[0] ?? process.cwd() },
+      ],
+      exports: [
+        OPTIONS_TOKEN,
+        ARGUMENTS_TOKEN,
+        WORKING_DIRECTORY_TOKEN,
+      ],
+      global: true,
+    };
+  }
+}

@@ -1,4 +1,4 @@
-import { Injectable, type ClassProvider } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Tool, type Context } from '@rekog/mcp-nest';
 import type { Request } from 'express';
 import { z } from 'zod';
@@ -7,6 +7,7 @@ import { execa } from 'execa';
 import { $ as $kleur, bold, green, red, white } from 'kleur/colors';
 import colorSupport from 'color-support';
 
+import { WORKING_DIRECTORY_TOKEN } from './args.module';
 import { ExecuteResultSchema, type Command, type ExecuteResult } from './commands.schema';
 
 $kleur.enabled = !!colorSupport();
@@ -14,6 +15,10 @@ $kleur.enabled = !!colorSupport();
 export function createCommandTool(name: string, spec: Command) {
   @Injectable()
   class DynamicCommandsTool {
+    constructor(
+      @Inject(WORKING_DIRECTORY_TOKEN) private readonly cwd: string,
+    ) { }
+
     @Tool({
       name: name,
       description: spec.description,
@@ -39,6 +44,7 @@ export function createCommandTool(name: string, spec: Command) {
         lines: true,
         all: true,
         reject: false,
+        cwd: this.cwd,
       });
 
       const lines = [] as string[];
@@ -72,15 +78,4 @@ export function createCommandTool(name: string, spec: Command) {
   }
 
   return DynamicCommandsTool;
-}
-
-export function createCommandToolProviders(commands: Record<string, Command>): ClassProvider[] {
-  return Object.entries(commands).map(([name, spec]) => ({
-    provide: getToolToken(name),
-    useClass: createCommandTool(name, spec),
-  }));
-}
-
-export function getToolToken(name: string): string {
-  return `COMMAND(${name})`;
 }
