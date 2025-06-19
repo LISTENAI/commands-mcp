@@ -28,12 +28,25 @@
                     },
                     "type": {
                       "type": "string",
-                      "description": "The type of the argument (e.g., string, number, boolean)",
-                      "default": "string"
+                      "enum": [
+                        "string",
+                        "number",
+                        "boolean"
+                      ],
+                      "default": "string",
+                      "description": "The type of the argument (e.g., string, number, boolean)"
                     },
                     "required": {
                       "type": "boolean",
                       "description": "Whether the argument is required"
+                    },
+                    "default": {
+                      "type": [
+                        "string",
+                        "number",
+                        "boolean"
+                      ],
+                      "description": "The default value for the argument (type must match the type field)"
                     }
                   },
                   "required": [
