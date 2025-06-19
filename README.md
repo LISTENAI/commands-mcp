@@ -27,7 +27,9 @@ commands-mcp
           - name: source_dir
             description: 项目源码目录，如未指定则使用当前目录
             type: string
-        command: source .venv/bin/activate && west build -p -s {source_dir} -b {board}
+        command: |
+          source .venv/bin/activate
+          west build {{#if pristine}}-p{{/if}} -s {{source_dir}} -b {{board}}
 
       zephyr_flash:
         description: 将编译好的固件烧录到设备
@@ -69,7 +71,7 @@ commands-mcp
       * `type` - 参数类型（如 `string`, `number`, `boolean` 等），默认为 `string`
       * `required` - 是否为必需参数（与 `default` 字段互斥）
       * `default` - 参数的默认值，类型必须与 `type` 字段一致（与 `required` 字段互斥）
-    * `command` - 执行的命令模板，支持 `{}` 占位符替换参数
+    * `command` - 执行的命令模板，使用 [Handlebars](https://handlebarsjs.com/guide/expressions.html) 语法
 
 ## 协议
 

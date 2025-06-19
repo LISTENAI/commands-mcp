@@ -3,6 +3,7 @@ import { Tool, type Context } from '@rekog/mcp-nest';
 import type { Request } from 'express';
 import { z } from 'zod';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import Handlebars from 'handlebars';
 import { execa } from 'execa';
 import { $ as $kleur, bold, green, red, white } from 'kleur/colors';
 import colorSupport from 'color-support';
@@ -15,6 +16,8 @@ $kleur.enabled = !!colorSupport();
 export function createCommandTool(name: string, spec: Command) {
   @Injectable()
   class DynamicCommandsTool {
+    private readonly renderCommand = Handlebars.compile(spec.command);
+
     constructor(
       @Inject(WORKING_DIRECTORY_TOKEN) private readonly cwd: string,
     ) { }
@@ -26,7 +29,7 @@ export function createCommandTool(name: string, spec: Command) {
       outputSchema: ExecuteResultSchema,
     })
     async execute(args: Args, _context: Context, _req: Request): Promise<CallToolResult> {
-      const command = renderCommand(spec, args);
+      const command = this.renderCommand(args);
 
       console.log(bold(white(`$ ${command}`)));
 
@@ -88,13 +91,3 @@ function buildSchemaFromSpec(spec: Command) {
 }
 
 type Args = z.infer<ReturnType<typeof buildSchemaFromSpec>>;
-
-function renderCommand(spec: Command, args: Args): string {
-  return spec.command.replace(/\{([^}]+)\}/g, (_literal, exp: string) => {
-    if (exp in args) {
-      return String(args[exp]);
-    } else {
-      throw new Error(`Missing argument: ${exp}`);
-    }
-  });
-}
