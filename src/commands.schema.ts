@@ -1,13 +1,35 @@
 import { z } from 'zod';
 
+const ArgumentSchema = z.object({
+  name: z.string().describe('The name of the argument'),
+  description: z.string().describe('A brief description of the argument'),
+  type: z.enum(['string', 'number', 'boolean']).default('string')
+    .describe('The type of the argument (e.g., string, number, boolean)'),
+  required: z.boolean().optional().describe('Whether the argument is required'),
+  default: z.union([z.string(), z.number(), z.boolean()]).optional()
+    .describe('The default value for the argument (type must match the type field)'),
+}).superRefine((arg, ctx) => {
+  if (arg.default !== undefined) {
+    if (arg.required) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Required arguments cannot have a default value',
+      });
+    }
+
+    const { success } = z[arg.type]().safeParse(arg.default);
+    if (!success) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Default value must be of type ${arg.type}`,
+      });
+    }
+  }
+});
+
 export const CommandSchema = z.object({
   description: z.string().describe('A brief description of the command'),
-  args: z.array(z.object({
-    name: z.string().describe('The name of the argument'),
-    description: z.string().describe('A brief description of the argument'),
-    type: z.string().describe('The type of the argument (e.g., string, number, boolean)').default('string'),
-    required: z.boolean().optional().describe('Whether the argument is required'),
-  })).optional().describe('The arguments for the command'),
+  args: z.array(ArgumentSchema).optional().describe('The arguments for the command'),
   command: z.string().describe('The command template with placeholders for arguments'),
 });
 

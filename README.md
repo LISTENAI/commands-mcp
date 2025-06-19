@@ -67,7 +67,8 @@ commands-mcp
       * `name` - 参数名称
       * `description` - 参数描述
       * `type` - 参数类型（如 `string`, `number`, `boolean` 等），默认为 `string`
-      * `required` - 是否为必需参数
+      * `required` - 是否为必需参数（与 `default` 字段互斥）
+      * `default` - 参数的默认值，类型必须与 `type` 字段一致（与 `required` 字段互斥）
     * `command` - 执行的命令模板，支持 `{}` 占位符替换参数
 
 ## 协议

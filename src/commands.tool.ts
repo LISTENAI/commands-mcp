@@ -22,20 +22,11 @@ export function createCommandTool(name: string, spec: Command) {
     @Tool({
       name: name,
       description: spec.description,
-      parameters: z.object(Object.fromEntries((spec.args ?? []).map((arg) => [
-        arg.name,
-        z.string().describe(arg.description),
-      ]))),
+      parameters: buildSchemaFromSpec(spec),
       outputSchema: ExecuteResultSchema,
     })
-    async execute(args: Record<string, string>, _context: Context, _req: Request): Promise<CallToolResult> {
-      const command = spec.command.replace(/\{([^}]+)\}/g, (_, key) => {
-        if (key in args) {
-          return args[key]!;
-        } else {
-          throw new Error(`Missing argument: ${key}`);
-        }
-      });
+    async execute(args: Args, _context: Context, _req: Request): Promise<CallToolResult> {
+      const command = renderCommand(spec, args);
 
       console.log(bold(white(`$ ${command}`)));
 
@@ -78,4 +69,32 @@ export function createCommandTool(name: string, spec: Command) {
   }
 
   return DynamicCommandsTool;
+}
+
+function buildSchemaFromSpec(spec: Command) {
+  return z.object(Object.fromEntries((spec.args ?? []).map((arg) => {
+    let schema: z.ZodType = z[arg.type]().describe(arg.description);
+
+    if (!arg.required) {
+      schema = schema.optional();
+    }
+
+    if (arg.default !== undefined) {
+      schema = schema.default(arg.default);
+    }
+
+    return [arg.name, schema];
+  })));
+}
+
+type Args = z.infer<ReturnType<typeof buildSchemaFromSpec>>;
+
+function renderCommand(spec: Command, args: Args): string {
+  return spec.command.replace(/\{([^}]+)\}/g, (_literal, exp: string) => {
+    if (exp in args) {
+      return String(args[exp]);
+    } else {
+      throw new Error(`Missing argument: ${exp}`);
+    }
+  });
 }
