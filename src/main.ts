@@ -11,11 +11,17 @@ const app = await NestFactory.create<NestExpressApplication>(AppModule, {
   logger: false,
 });
 
-const args = app.get<Options>(OPTIONS_TOKEN);
+const opts = app.get<Options>(OPTIONS_TOKEN);
 
-if (args.verbose) {
+if (opts.verbose) {
   app.useLogger(new ConsoleLogger());
 }
 
-const server = await app.listen(args.port ?? 0);
-console.log(`MCP Server is running at http://localhost:${(server.address() as AddressInfo).port}/sse`);
+if (opts.stdio) {
+  const server = await app.listen(0);
+  server.close();
+  console.error('MCP Server is running in STDIO mode');
+} else {
+  const server = await app.listen(opts.port ?? 0);
+  console.error(`MCP Server is running at http://localhost:${(server.address() as AddressInfo).port}/sse`);
+}
