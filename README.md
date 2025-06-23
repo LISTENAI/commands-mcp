@@ -1,5 +1,7 @@
-commands-mcp
+commands-mcp [![.github/workflows/build.yml](https://github.com/LISTENAI/commands-mcp/actions/workflows/build.yml/badge.svg)](https://github.com/LISTENAI/commands-mcp/actions/workflows/build.yml)
 ============
+
+[![][npm-version]][npm-url] [![][npm-downloads]][npm-url] [![license][license-img]][license-url] [![issues][issues-img]][issues-url] [![stars][stars-img]][stars-url] [![commits][commits-img]][commits-url]
 
 使用命令模板构建 MCP Server。
 
@@ -97,3 +99,15 @@ Working directory: /home/myproject
 ## 协议
 
 [Apache-2.0](LICENSE)
+
+[npm-version]: https://img.shields.io/npm/v/@listenai/commands-mcp.svg?style=flat-square
+[npm-downloads]: https://img.shields.io/npm/dm/@listenai/commands-mcp.svg?style=flat-square
+[npm-url]: https://www.npmjs.org/package/@listenai/commands-mcp
+[license-img]: https://img.shields.io/github/license/LISTENAI/commands-mcp?style=flat-square
+[license-url]: LICENSE
+[issues-img]: https://img.shields.io/github/issues/LISTENAI/commands-mcp?style=flat-square
+[issues-url]: https://github.com/LISTENAI/commands-mcp/issues
+[stars-img]: https://img.shields.io/github/stars/LISTENAI/commands-mcp?style=flat-square
+[stars-url]: https://github.com/LISTENAI/commands-mcp/stargazers
+[commits-img]: https://img.shields.io/github/last-commit/LISTENAI/commands-mcp?style=flat-square
+[commits-url]: https://github.com/LISTENAI/commands-mcp/commits/master
