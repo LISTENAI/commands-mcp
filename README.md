@@ -11,54 +11,75 @@ commands-mcp
 
 ## 使用
 
-1. 在你的项目中创建一个 `commands.yaml` 文件，定义你的命令模板。以下是一个用于 Zephyr 项目的示例：
+在你的项目中创建一个 `commands.yaml` 文件，定义你的命令模板。以下是一个用于 Zephyr 项目的示例：
 
-    ```yaml
-    # yaml-language-server: $schema=http://listenai.github.io/commands-mcp/schema/master.json
+```yaml
+# yaml-language-server: $schema=http://listenai.github.io/commands-mcp/schema/master.json
 
-    commands:
-      zephyr_build:
-        description: 编译当前 Zephyr 项目
-        args:
-          - name: board
-            description: 需要构建的 board identifier，如果不能从对话历史中确定，则询问用户
-            type: string
-            required: true
-          - name: source_dir
-            description: 项目源码目录，如未指定则使用当前目录
-            type: string
-        command: |
-          source .venv/bin/activate
-          west build {{#if pristine}}-p{{/if}} -s {{source_dir}} -b {{board}}
+commands:
+  zephyr_build:
+    description: 编译当前 Zephyr 项目
+    args:
+      - name: board
+        description: 需要构建的 board identifier，如果不能从对话历史中确定，则询问用户
+        type: string
+        required: true
+      - name: source_dir
+        description: 项目源码目录，如未指定则使用当前目录
+        type: string
+    command: |
+      source .venv/bin/activate
+      west build {{#if pristine}}-p{{/if}} -s {{source_dir}} -b {{board}}
 
-      zephyr_flash:
-        description: 将编译好的固件烧录到设备
-        command: source .venv/bin/activate && west flash
-    ```
+  zephyr_flash:
+    description: 将编译好的固件烧录到设备
+    command: source .venv/bin/activate && west flash
+```
 
-    > 推荐配合 [redhat.vscode-yaml](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) 插件使用，以便提供 YAML 字段补全和验证。
+> 推荐配合 [redhat.vscode-yaml](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) 插件使用，以便提供 YAML 字段补全和验证。
 
-2. 在项目目录下运行 MCP Server：
+### SSE 模式
 
-    ```
-    $ npx @listenai/commands-mcp
-    MCP Server is running at http://localhost:53163/sse
-    ```
+大部分 MCP 客户端（如 Claude Desktop、Cline 等）只支持全局的 MCP 服务，因此需要在当前项目中以 SSE 模式运行 commands-mcp，并通过 SSE 接入客户端：
 
-3. 将上面所输出的 URL 作为 SSE 类型的 MCP Server 填入到你的 MCP 客户端配置中。
+```
+$ npx @listenai/commands-mcp
+MCP Server is running at http://localhost:53163/sse
+Working directory: /home/myproject
+```
 
-    ```json
-    {
-      "mcpServers": {
-        "commands-mcp": {
-          "type": "sse",
-          "url": "http://localhost:53163/sse"
-        }
-      }
+将上面所输出的 URL 作为 SSE 类型的 MCP Server 填入到你的 MCP 客户端配置中：
+
+```json
+{
+  "mcpServers": {
+    "commands-mcp": {
+      "type": "sse",
+      "url": "http://localhost:53163/sse"
     }
-    ```
+  }
+}
+```
 
-    > 如果你的客户端不支持 SSE，可以使用 [mcp-proxy](https://github.com/sparfenyuk/mcp-proxy) 或其它类似的工具转接为 STDIO。
+> 如果你的客户端不支持 SSE，可以使用 [mcp-proxy](https://github.com/sparfenyuk/mcp-proxy) 或其它类似的工具转接为 STDIO。
+
+### STDIO 模式
+
+某些 MCP 客户端支持配置项目级别的 MCP 服务，此时可以直接在项目中以 STDIO 模式启动 commands-mcp。以 GitHub Copilot Chat 为例，编辑 `.vscode/mcp.json`：
+
+```json
+{
+  "servers": {
+    "commands-mcp": {
+      "command": "npx",
+      "args": [
+        "@listenai/commands-mcp",
+        "--stdio",
+      ],
+    },
+  },
+}
+```
 
 ## 配置
 
