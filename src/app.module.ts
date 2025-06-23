@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { McpModule } from '@rekog/mcp-nest';
 
-import { ArgumentsModule } from './args.module';
+import { ArgumentsModule, opts } from './args.module';
 import { CommandsModule } from './commands.module';
 
 import pkg from '../package.json';
@@ -13,7 +13,7 @@ import pkg from '../package.json';
       version: pkg.version,
     }),
     ArgumentsModule.forRoot(),
-    CommandsModule.forRootAsync('commands.yaml'),
+    CommandsModule.forRootAsync(opts.manifest),
   ],
 })
 export class AppModule {

@@ -8,16 +8,18 @@ program
   .description(pkg.description)
   .version(pkg.version)
   .option('-p, --port <number>', 'port to run the server on, 0 or omit for random port', parseInt)
+  .option('-m, --manifest <path>', 'path to the commands manifest file', 'commands.yaml')
   .option('-v, --verbose', 'enable verbose logging', false)
   .argument('[working-directory]', 'the working directory to run commands in, defaults to $PWD')
 
 program.parse();
 
-const opts = program.opts<Options>();
-const args = program.args;
+export const opts = program.opts<Options>();
+export const args = program.args;
 
 export interface Options {
   port?: number;
+  manifest: string;
   verbose?: boolean;
 }
 
