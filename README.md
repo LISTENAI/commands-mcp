@@ -14,7 +14,7 @@ commands-mcp
 1. 在你的项目中创建一个 `commands.yaml` 文件，定义你的命令模板。以下是一个用于 Zephyr 项目的示例：
 
     ```yaml
-    # yaml-language-server: $schema=http://listenai.github.io/commands-mcp/schema/v1.json
+    # yaml-language-server: $schema=http://listenai.github.io/commands-mcp/schema/master.json
 
     commands:
       zephyr_build:
