@@ -41,12 +41,41 @@ export function createCommandTool(name: string, spec: Command) {
         cwd: this.cwd,
       });
 
+      const terminateByTimeout = ((timeout) => timeout ? setTimeout(() => {
+        console.error(bold(red(`> Command timed out after ${timeout}ms`)));
+        proc.kill();
+      }, timeout) : undefined)(spec.terminate?.timeout);
+
+      const terminateByOutput = ((pattern) => {
+        if (!pattern) {
+          return undefined;
+        } else if (pattern.startsWith('/') && pattern.endsWith('/')) {
+          const regex = new RegExp(pattern.slice(1, -1));
+          return (line: string) => {
+            if (regex.test(line)) {
+              console.error(bold(red(`> Command terminated due to output matching: ${pattern}`)));
+              proc.kill();
+            }
+          };
+        } else {
+          return (line: string) => {
+            if (line.includes(pattern)) {
+              console.error(bold(red(`> Command terminated due to output containing: ${pattern}`)));
+              proc.kill();
+            }
+          };
+        }
+      })(spec.terminate?.output);
+
       const lines = [] as string[];
 
       for await (const line of proc.iterable({ from: 'all' })) {
         console.log(line);
         lines.push(line);
+        terminateByOutput?.(line);
       }
+
+      clearTimeout(terminateByTimeout);
 
       const code = proc.exitCode ?? 0;
       if (code == 0) {
