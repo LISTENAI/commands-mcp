@@ -60,6 +60,21 @@
               "command": {
                 "type": "string",
                 "description": "The command template with placeholders for arguments"
+              },
+              "terminate": {
+                "type": "object",
+                "properties": {
+                  "timeout": {
+                    "type": "number",
+                    "description": "Maximum duration in milliseconds before the command is automatically terminated"
+                  },
+                  "output": {
+                    "type": "string",
+                    "description": "Automatically terminate if the output contains this string. Regex is supported using /.../ syntax (e.g., /error/)"
+                  }
+                },
+                "additionalProperties": false,
+                "description": "Conditions under which the command will be automatically terminated"
               }
             },
             "required": [
