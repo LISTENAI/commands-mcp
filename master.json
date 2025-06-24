@@ -64,6 +64,17 @@
               "terminate": {
                 "type": "object",
                 "properties": {
+                  "signal": {
+                    "type": "string",
+                    "enum": [
+                      "SIGKILL",
+                      "SIGTERM",
+                      "SIGINT",
+                      "SIGQUIT"
+                    ],
+                    "default": "SIGTERM",
+                    "description": "Signal to send to the process when terminating, defaults to SIGTERM"
+                  },
                   "timeout": {
                     "type": "number",
                     "description": "Maximum duration in milliseconds before the command is automatically terminated"
