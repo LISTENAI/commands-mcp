@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { McpModule, McpTransportType } from '@rekog/mcp-nest';
 
-import { ArgumentsModule, opts } from './args.module';
+import { ArgumentsModule, opts, resolvedManifestPath } from './args.module';
 import { CommandsModule } from './commands.module';
 
 import pkg from '../package.json';
@@ -14,7 +14,7 @@ import pkg from '../package.json';
       transport: opts.stdio ? McpTransportType.STDIO : McpTransportType.SSE,
     }),
     ArgumentsModule.forRoot(),
-    CommandsModule.forRootAsync(opts.manifest),
+    CommandsModule.forRootAsync(resolvedManifestPath),
   ],
 })
 export class AppModule {

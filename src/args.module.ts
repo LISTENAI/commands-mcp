@@ -1,4 +1,5 @@
 import { Module, type DynamicModule } from '@nestjs/common';
+import { resolve } from 'path';
 import { program } from 'commander';
 
 import pkg from '../package.json';
@@ -25,6 +26,9 @@ export interface Options {
   verbose?: boolean;
 }
 
+export const cwd = args[0] ?? process.cwd();
+export const resolvedManifestPath = resolve(cwd, opts.manifest);
+
 export const OPTIONS_TOKEN = Symbol('OPTIONS_TOKEN');
 export const ARGUMENTS_TOKEN = Symbol('ARGUMENTS_TOKEN');
 export const WORKING_DIRECTORY_TOKEN = Symbol('WORKING_DIRECTORY_TOKEN');
@@ -37,7 +41,7 @@ export class ArgumentsModule {
       providers: [
         { provide: OPTIONS_TOKEN, useValue: opts },
         { provide: ARGUMENTS_TOKEN, useValue: args },
-        { provide: WORKING_DIRECTORY_TOKEN, useValue: args[0] ?? process.cwd() },
+        { provide: WORKING_DIRECTORY_TOKEN, useValue: cwd },
       ],
       exports: [
         OPTIONS_TOKEN,
