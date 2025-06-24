@@ -32,6 +32,7 @@ export const CommandSchema = z.object({
   args: z.array(ArgumentSchema).optional().describe('The arguments for the command'),
   command: z.string().describe('The command template with placeholders for arguments'),
   terminate: z.object({
+    signal: z.enum(['SIGKILL', 'SIGTERM', 'SIGINT', 'SIGQUIT']).default('SIGTERM').describe('Signal to send to the process when terminating, defaults to SIGTERM'),
     timeout: z.number().optional().describe('Maximum duration in milliseconds before the command is automatically terminated'),
     output: z.string().optional().describe('Automatically terminate if the output contains this string. Regex is supported using /.../ syntax (e.g., /error/)'),
   }).optional().describe('Conditions under which the command will be automatically terminated'),

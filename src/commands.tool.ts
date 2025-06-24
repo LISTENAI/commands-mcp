@@ -43,7 +43,7 @@ export function createCommandTool(name: string, spec: Command) {
 
       const terminateByTimeout = ((timeout) => timeout ? setTimeout(() => {
         console.error(bold(red(`> Command timed out after ${timeout}ms`)));
-        proc.kill();
+        proc.kill(spec.terminate?.signal);
       }, timeout) : undefined)(spec.terminate?.timeout);
 
       const terminateByOutput = ((pattern) => {
@@ -54,14 +54,14 @@ export function createCommandTool(name: string, spec: Command) {
           return (line: string) => {
             if (regex.test(line)) {
               console.error(bold(red(`> Command terminated due to output matching: ${pattern}`)));
-              proc.kill();
+              proc.kill(spec.terminate?.signal);
             }
           };
         } else {
           return (line: string) => {
             if (line.includes(pattern)) {
               console.error(bold(red(`> Command terminated due to output containing: ${pattern}`)));
-              proc.kill();
+              proc.kill(spec.terminate?.signal);
             }
           };
         }

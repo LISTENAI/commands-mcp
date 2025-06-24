@@ -96,6 +96,7 @@ Working directory: /home/myproject
       * `default` - 参数的默认值，类型必须与 `type` 字段一致（与 `required` 字段互斥）
     * `command` - 执行的命令模板，使用 [Handlebars](https://handlebarsjs.com/guide/expressions.html) 语法
     * `terminate` - 可选，当符合特定条件时自动终止命令执行
+      * `signal` - 终止信号 （可选值 `SIGKILL`, `SIGTERM`, `SIGINT`, `SIGQUIT`），默认为 `SIGTERM`
       * `timeout` - 命令执行达到指定时间，单位为毫秒
       * `output` - 命令输出（单行）包含特定字符。可使用 `/.../` 语法指定正则表达式（如 `/^return: \d$/`）
 
