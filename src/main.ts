@@ -3,9 +3,12 @@ import { ConsoleLogger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import type { AddressInfo } from 'net';
+import { access, constants } from 'fs/promises';
 
 import { AppModule } from '@/app.module';
-import { OPTIONS_TOKEN, WORKING_DIRECTORY_TOKEN, type Options } from '@/args.module';
+import { OPTIONS_TOKEN, resolvedManifestPath, WORKING_DIRECTORY_TOKEN, type Options } from '@/args.module';
+
+await access(resolvedManifestPath, constants.R_OK);
 
 const app = await NestFactory.create<NestExpressApplication>(AppModule, {
   logger: false,
