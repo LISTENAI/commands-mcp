@@ -1,0 +1,44 @@
+{
+  "dxt_version": "0.1",
+  "name": "Commands",
+  "version": "0.4.1",
+  "description": "Build MCP Server with command template",
+  "author": {
+    "name": "LISTENAI",
+    "url": "https://github.com/LISTENAI"
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "dist/main.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/dist/main.js",
+        "--stdio",
+        "${user_config.workspace_dir}"
+      ]
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LISTENAI/commands-mcp.git"
+  },
+  "homepage": "https://www.listenai.com/",
+  "documentation": "https://github.com/LISTENAI/commands-mcp",
+  "support": "https://github.com/LISTENAI/commands-mcp/issues",
+  "tools_generated": true,
+  "license": "Apache-2.0",
+  "compatibility": {
+    "runtimes": {
+      "node": ">=22.0.0"
+    }
+  },
+  "user_config": {
+    "workspace_dir": {
+      "type": "directory",
+      "title": "Workspace Directory",
+      "description": "The root directory of your workspace",
+      "required": true
+    }
+  }
+}

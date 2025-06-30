@@ -20,6 +20,7 @@
     "lint": "oxlint",
     "build": "oxlint && tsdown",
     "build-schema": "tsdown src/schema-exporter.ts && node dist/schema-exporter.js > dist/schema.json",
+    "pack-dxt": "npm run build && dxt pack",
     "dev": "oxlint && tsdown -w",
     "inspector": "mcp-inspector",
     "prepublishOnly": "npm run build"
@@ -43,6 +44,7 @@
     "zod": "^3.25.50"
   },
   "devDependencies": {
+    "@anthropic-ai/dxt": "^0.2.0",
     "@modelcontextprotocol/inspector": "^0.14.2",
     "@tsconfig/node22": "^22.0.2",
     "@tsconfig/strictest": "^2.0.5",

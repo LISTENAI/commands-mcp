@@ -14,7 +14,11 @@ program
   .option('-v, --verbose', 'enable verbose logging', false)
   .argument('[working-directory]', 'the working directory to run commands in, defaults to $PWD')
 
-program.parse();
+// Claude Desktop 的 DXT 运行时会将 argv 伪造成 node 启动的样子，但由于
+// process.versions.election 的存在，会被 commander.js 认出是 Electron 从而使用了错误
+// 的 slice。所以强制指定为 node 模式。
+// https://github.com/tj/commander.js/blob/395cf7145fe28122f5a69026b310e02df114f907/lib/command.js#L1010-L1012
+program.parse(process.argv, { from: 'node' });
 
 export const opts = program.opts<Options>();
 export const args = program.args;

@@ -1,0 +1,12 @@
+.DS_Store
+*.tgz
+*.ts
+.github
+.vscode
+.editorconfig
+.gitignore
+Dockerfile
+README.md
+LICENSE
+package-lock.json
+tsconfig.json
