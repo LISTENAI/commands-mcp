@@ -2,12 +2,12 @@ import { Module, type DynamicModule } from '@nestjs/common';
 import { resolve } from 'path';
 import { program } from 'commander';
 
-import pkg from '../package.json';
+import { description, version } from '../package.json';
 
 program
   .name('commands-mcp')
-  .description(pkg.description)
-  .version(pkg.version)
+  .description(description)
+  .version(version)
   .option('-p, --port <number>', 'port to run the server on, 0 or omit for random port', parseInt)
   .option('-s, --stdio', 'run the server in STDIO mode', false)
   .option('-m, --manifest <path>', 'path to the commands manifest file', 'commands.yaml')

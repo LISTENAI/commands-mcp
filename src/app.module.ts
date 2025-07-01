@@ -4,13 +4,13 @@ import { McpModule, McpTransportType } from '@rekog/mcp-nest';
 import { ArgumentsModule, opts, resolvedManifestPath } from './args.module';
 import { CommandsModule } from './commands.module';
 
-import pkg from '../package.json';
+import { name, version } from '../package.json';
 
 @Module({
   imports: [
     McpModule.forRoot({
-      name: pkg.name,
-      version: pkg.version,
+      name,
+      version,
       transport: opts.stdio ? McpTransportType.STDIO : McpTransportType.SSE,
     }),
     ArgumentsModule.forRoot(),
