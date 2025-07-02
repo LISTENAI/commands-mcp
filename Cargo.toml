@@ -1,0 +1,15 @@
+[package]
+name = "commands-mcp"
+version = "0.10.0"
+authors = ["xychen <xychen@listenai.com>"]
+edition = "2024"
+description = "Build MCP Server with command template"
+repository = "https://github.com/LISTENAI/commands-mcp"
+license = "Apache-2.0"
+publish = false
+
+[dependencies]
+anyhow = "1.0.98"
+clap = { version = "4.5.40", features = ["cargo", "derive"] }
+rmcp = { version = "0.2.1", features = ["macros", "server", "transport-io"] }
+tokio = { version = "1.46.0", features = ["rt-multi-thread"] }
