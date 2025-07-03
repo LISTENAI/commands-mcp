@@ -1,3 +1,4 @@
+use jsonschema::{ValidationError, validate};
 use serde_json::{Map, Value as JsonValue};
 
 use crate::manifest::{ArgumentSpec, ArgumentType, CommandSpec};
@@ -31,6 +32,11 @@ impl CommandSpec {
         );
 
         schema
+    }
+
+    pub fn validate<'a>(&self, value: &'a JsonValue) -> Result<(), ValidationError<'a>> {
+        let schema: JsonValue = self.to_schema().into();
+        validate(&schema, value)
     }
 }
 

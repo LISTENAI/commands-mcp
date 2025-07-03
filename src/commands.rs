@@ -29,6 +29,9 @@ impl Commands {
         spec: &CommandSpec,
         args: &JsonValue,
     ) -> Result<CallToolResult, McpError> {
+        spec.validate(args)
+            .map_err(|e| McpError::invalid_params(format!("Invalid argument: {}", e), None))?;
+
         let response_text = format!(
             "Executing: {}\nArguments: {}",
             spec.command,
