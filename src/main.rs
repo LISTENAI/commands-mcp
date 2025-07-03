@@ -1,6 +1,7 @@
 mod commands;
 mod error;
 mod manifest;
+mod manifest_executor;
 mod manifest_reader;
 mod manifest_schema;
 
@@ -36,7 +37,7 @@ async fn main() -> Result<()> {
     let manifest = manifest::Manifest::from(manifest_path)
         .map_err(|e| anyhow::anyhow!("Failed to load manifest: {}", e))?;
 
-    let service = Commands::new(manifest)
+    let service = Commands::new(working_directory, manifest)
         .serve(stdio())
         .await
         .inspect_err(|e| {

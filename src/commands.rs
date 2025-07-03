@@ -1,6 +1,7 @@
-use std::sync::Arc;
+use std::{path::PathBuf, sync::Arc};
 
 use clap::crate_version;
+use handlebars::Handlebars;
 use rmcp::{
     Error as McpError, RoleServer, ServerHandler, handler::server::tool::ToolCallContext,
     handler::server::tool::ToolRouter, model::*, service::RequestContext, tool_router,
@@ -12,15 +13,19 @@ use crate::manifest::{CommandSpec, Manifest};
 #[derive(Clone)]
 pub struct Commands {
     tool_router: ToolRouter<Self>,
+    cwd: PathBuf,
     manifest: Manifest,
+    handlebars: Handlebars<'static>,
 }
 
 #[tool_router]
 impl Commands {
-    pub fn new(manifest: Manifest) -> Self {
+    pub fn new(cwd: PathBuf, manifest: Manifest) -> Self {
         Self {
             tool_router: Self::tool_router(),
+            cwd,
             manifest,
+            handlebars: Handlebars::new(),
         }
     }
 
@@ -32,13 +37,25 @@ impl Commands {
         spec.validate(args)
             .map_err(|e| McpError::invalid_params(format!("Invalid argument: {}", e), None))?;
 
-        let response_text = format!(
-            "Executing: {}\nArguments: {}",
-            spec.command,
-            serde_json::to_string_pretty(args).unwrap_or_else(|_| "Invalid JSON".to_string())
-        );
+        let (command, output, exit_code) = spec
+            .execute(&self.handlebars, args, &self.cwd)
+            .map_err(|e| {
+                McpError::invalid_params(format!("Command execution error: {}", e), None)
+            })?;
 
-        Ok(CallToolResult::success(vec![Content::text(response_text)]))
+        let mut response = String::new();
+
+        response.push_str(&format!("## Command\n\n```\n{}\n```\n\n", command.trim()));
+
+        if !output.is_empty() {
+            response.push_str(&format!("## Output\n\n```\n{}\n```\n\n", output.trim()));
+        } else {
+            response.push_str("## Output\n\nNo output.\n\n");
+        }
+
+        response.push_str(&format!("Command exited with code: {}", exit_code));
+
+        Ok(CallToolResult::success(vec![Content::text(response)]))
     }
 }
 
