@@ -2,6 +2,7 @@ mod commands;
 mod error;
 mod manifest;
 mod manifest_reader;
+mod manifest_schema;
 
 use std::{env::current_dir, path::PathBuf};
 
@@ -35,11 +36,12 @@ async fn main() -> Result<()> {
     let manifest = manifest::Manifest::from(manifest_path)
         .map_err(|e| anyhow::anyhow!("Failed to load manifest: {}", e))?;
 
-    println!("Loaded manifest: {:?}", manifest);
-
-    let service = Commands::new().serve(stdio()).await.inspect_err(|e| {
-        println!("Error starting server: {}", e);
-    })?;
+    let service = Commands::new(manifest)
+        .serve(stdio())
+        .await
+        .inspect_err(|e| {
+            println!("Error starting server: {}", e);
+        })?;
 
     service.waiting().await?;
 
