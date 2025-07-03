@@ -1,14 +1,15 @@
 use std::collections::HashMap;
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct Manifest {
     /// A collection of commands
     pub commands: HashMap<String, CommandSpec>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct CommandSpec {
     /// A brief description of the command
     pub description: String,
@@ -21,7 +22,7 @@ pub struct CommandSpec {
     pub command: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct ArgumentSpec {
     /// The name of the argument
     pub name: String,
@@ -42,8 +43,7 @@ pub struct ArgumentSpec {
     pub default: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "type")]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub enum ArgumentType {
     /// String argument
     #[serde(rename = "string")]
