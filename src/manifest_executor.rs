@@ -10,6 +10,23 @@ use serde_json::Value as JsonValue;
 
 use crate::manifest::CommandSpec;
 
+#[cfg(unix)]
+fn shell(command: &str) -> Command {
+    let mut cmd = Command::new("bash");
+    cmd.arg("-c").arg(command.replace("\r\n", "\n"));
+    cmd
+}
+
+#[cfg(windows)]
+fn shell(command: &str) -> Command {
+    let mut cmd = Command::new("powershell");
+    cmd.arg("-Command").arg(format!(
+        "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8\r\n{}",
+        command.replace("\r\n", "\n").replace("\n", "\r\n")
+    ));
+    cmd
+}
+
 impl CommandSpec {
     pub fn execute(
         &self,
@@ -27,10 +44,8 @@ impl CommandSpec {
             McpError::internal_error(format!("Failed creating stdio pipes: {}", e), None)
         })?;
 
-        let mut proc = Command::new("bash")
+        let mut proc = shell(&command)
             .current_dir(cwd)
-            .arg("-c")
-            .arg(&command)
             .stdout(writer.try_clone().map_err(|e| {
                 McpError::internal_error(
                     format!("Failed creating stdio pipes for child process: {}", e),
