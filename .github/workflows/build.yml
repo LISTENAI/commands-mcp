@@ -33,8 +33,22 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
+      - name: (Ubuntu) Install native dependencies
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            libudev-dev
+
+      - name: Set up temperary SSH key to fetch cskburn-rs
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_CSKBURN }}
+
       - name: Build
         run: cargo build --release --target ${{ matrix.target }}
+        env:
+          CARGO_NET_GIT_FETCH_WITH_CLI: true
 
       - name: Archive distributable
         uses: actions/upload-artifact@v4

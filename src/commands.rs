@@ -15,8 +15,8 @@ use crate::manifest::{CommandSpec, Manifest};
 #[derive(Clone)]
 pub struct Commands {
     tool_router: ToolRouter<Self>,
-    cwd: PathBuf,
-    manifest: Manifest,
+    pub cwd: PathBuf,
+    pub manifest: Manifest,
     handlebars: Handlebars<'static>,
 }
 
@@ -26,6 +26,12 @@ impl Commands {
 
         for (name, spec) in manifest.commands.iter() {
             tool_router.add_route(spec.to_tool_route(name));
+        }
+
+        if let Some(opts) = &manifest.flash
+            && opts.enabled
+        {
+            tool_router.merge(Self::flash_router());
         }
 
         Self {

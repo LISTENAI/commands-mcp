@@ -7,6 +7,9 @@ use serde::{Deserialize, Serialize};
 pub struct Manifest {
     /// A collection of commands
     pub commands: HashMap<String, CommandSpec>,
+
+    /// Flash options for the manifest
+    pub flash: Option<FlashOptions>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
@@ -56,4 +59,16 @@ pub enum ArgumentType {
     /// Boolean argument
     #[serde(rename = "boolean")]
     Boolean,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+pub struct FlashOptions {
+    /// Whether flash tools are enabled
+    pub enabled: bool,
+
+    /// The chip model to flash
+    pub chip: String,
+
+    /// The baud rate for the flash operation
+    pub baudrate: Option<u32>,
 }

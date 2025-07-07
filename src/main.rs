@@ -1,4 +1,5 @@
 mod commands;
+mod commands_flash;
 mod error;
 mod manifest;
 mod manifest_executor;
