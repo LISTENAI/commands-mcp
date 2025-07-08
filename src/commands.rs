@@ -3,10 +3,12 @@ use std::{path::PathBuf, sync::Arc};
 use clap::crate_version;
 use handlebars::Handlebars;
 use rmcp::{
-    Error as McpError, RoleServer, ServerHandler, handler::server::tool::ToolCallContext,
-    handler::server::tool::ToolRouter, model::*, service::RequestContext, tool_router,
+    Error as McpError, ServerHandler,
+    handler::server::tool::{ToolCallContext, ToolRoute, ToolRouter},
+    model::*,
+    tool_handler,
 };
-use serde_json::Value as JsonValue;
+use serde_json::{Map, Value as JsonValue};
 
 use crate::manifest::{CommandSpec, Manifest};
 
@@ -18,11 +20,16 @@ pub struct Commands {
     handlebars: Handlebars<'static>,
 }
 
-#[tool_router]
 impl Commands {
     pub fn new(cwd: PathBuf, manifest: Manifest) -> Self {
+        let mut tool_router = ToolRouter::<Self>::new();
+
+        for (name, spec) in manifest.commands.iter() {
+            tool_router.add_route(spec.to_tool_route(name));
+        }
+
         Self {
-            tool_router: Self::tool_router(),
+            tool_router,
             cwd,
             manifest,
             handlebars: Handlebars::new(),
@@ -59,6 +66,7 @@ impl Commands {
     }
 }
 
+#[tool_handler]
 impl ServerHandler for Commands {
     fn get_info(&self) -> ServerInfo {
         ServerInfo {
@@ -71,45 +79,33 @@ impl ServerHandler for Commands {
             instructions: None,
         }
     }
+}
 
-    async fn list_tools(
-        &self,
-        _request: Option<PaginatedRequestParam>,
-        _context: RequestContext<RoleServer>,
-    ) -> Result<ListToolsResult, McpError> {
-        let mut tools = self.tool_router.list_all();
+impl CommandSpec {
+    pub fn to_tool_route(&self, name: &String) -> ToolRoute<Commands> {
+        ToolRoute::<Commands> {
+            attr: Tool {
+                name: name.to_string().into(),
+                description: Some(self.description.as_str().to_string().into()),
+                input_schema: Arc::new(self.to_schema()),
+                annotations: None,
+            },
+            call: Arc::new(|tcc: ToolCallContext<'_, Commands>| {
+                Box::pin(async move {
+                    let name = tcc.name.as_ref();
 
-        tools.extend(self.manifest.commands.iter().map(|(name, spec)| Tool {
-            name: name.clone().into(),
-            description: Some(spec.description.clone().into()),
-            input_schema: Arc::new(spec.to_schema()),
-            annotations: None,
-        }));
+                    let spec = tcc.service.manifest.commands.get(name).ok_or_else(|| {
+                        McpError::invalid_params(format!("Command '{}' not found", name), None)
+                    })?;
 
-        Ok(ListToolsResult::with_all_items(tools))
-    }
+                    let args = match tcc.arguments {
+                        Some(args) => JsonValue::Object(args),
+                        None => JsonValue::Object(Map::new()),
+                    };
 
-    async fn call_tool(
-        &self,
-        request: CallToolRequestParam,
-        context: RequestContext<RoleServer>,
-    ) -> Result<CallToolResult, McpError> {
-        if self.tool_router.has_route(request.name.as_ref()) {
-            let tcc = ToolCallContext::new(self, request, context);
-            return self.tool_router.call(tcc).await;
+                    tcc.service.execute(spec, &args).await
+                })
+            }),
         }
-
-        if let Some(spec) = self.manifest.commands.get(request.name.as_ref()) {
-            let args = match &request.arguments {
-                Some(args) => JsonValue::Object(args.clone()),
-                None => JsonValue::Object(serde_json::Map::new()),
-            };
-            return self.execute(spec, &args).await;
-        }
-
-        Err(McpError::invalid_params(
-            format!("Tool '{}' not found", request.name),
-            None,
-        ))
     }
 }
