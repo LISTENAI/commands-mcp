@@ -67,6 +67,35 @@ For code completion on the `commands.yaml` file, [redhat.vscode-yaml](https://ma
       * `default`: The default value for the argument, if it is not required.
     * `command`: The command to run. Supports [Handlebars](https://handlebarsjs.com/guide/expressions.html) templating for arguments.
 
+## Built-in tools
+
+In addition to the commands defined in `commands.yaml`, the MCP Server provides several built-in tools, which can be enabled in the `commands.yaml` file with corresponding configuration.
+
+### Flash tools
+
+Built-in tools for flashing firmware to LISTENAI devices.
+
+```yaml
+flash:
+  enabled: true         # Enable flash tools
+  chip: arcs            # Chip model, can be '6', 'arcs'
+  baudrate: 1500000     # Baud rate for flashing, defaults to 1500000
+```
+
+### Serial tools
+
+Built-in tools for reading logs from connected serial devices.
+
+```yaml
+serial:
+  enabled: true         # Enable serial tools
+  baudrate: 115200      # Baud rate for serial communication, defaults to 115200
+  reset: dtr            # Method to reset the device before reading logs, can be
+                        # 'dtr' or 'rts'. If not specified, no reset will be performed.
+  reset_interval: 100   # Interval in milliseconds between the reset line is
+                        # asserted and deasserted, defaults to 100ms.
+```
+
 ## License
 
 [Apache-2.0](LICENSE)
