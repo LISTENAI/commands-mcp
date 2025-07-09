@@ -1,0 +1,26 @@
+{
+  "name": "@listenai/commands-mcp",
+  "version": "0.10.0",
+  "description": "Build MCP Server with command template",
+  "license": "Apache-2.0",
+  "author": "LISTENAI",
+  "maintainers": [
+    "xychen <xychen@listenai.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LISTENAI/commands-mcp.git"
+  },
+  "bin": "./npm-wrapper.mjs",
+  "files": [
+    "binaries",
+    "npm-wrapper.mjs",
+    "LICENSE"
+  ],
+  "scripts": {
+    "inspector": "mcp-inspector"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/inspector": "^0.16.0"
+  }
+}
