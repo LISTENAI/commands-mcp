@@ -1,108 +1,208 @@
 {
-  "$ref": "#/definitions/CollectionSchema",
-  "definitions": {
-    "CollectionSchema": {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Manifest",
+  "type": "object",
+  "properties": {
+    "commands": {
+      "description": "A collection of commands",
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/CommandSpec"
+      }
+    },
+    "flash": {
+      "description": "Flash options for the manifest",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/FlashOptions"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "serial": {
+      "description": "Serial options for the manifest",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SerialOptions"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "commands"
+  ],
+  "$defs": {
+    "ArgumentSpec": {
       "type": "object",
       "properties": {
-        "commands": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "object",
-            "properties": {
-              "description": {
-                "type": "string",
-                "description": "A brief description of the command"
-              },
-              "args": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": "string",
-                      "description": "The name of the argument"
-                    },
-                    "description": {
-                      "type": "string",
-                      "description": "A brief description of the argument"
-                    },
-                    "type": {
-                      "type": "string",
-                      "enum": [
-                        "string",
-                        "number",
-                        "boolean"
-                      ],
-                      "default": "string",
-                      "description": "The type of the argument (e.g., string, number, boolean)"
-                    },
-                    "required": {
-                      "type": "boolean",
-                      "description": "Whether the argument is required"
-                    },
-                    "default": {
-                      "type": [
-                        "string",
-                        "number",
-                        "boolean"
-                      ],
-                      "description": "The default value for the argument (type must match the type field)"
-                    }
-                  },
-                  "required": [
-                    "name",
-                    "description"
-                  ],
-                  "additionalProperties": false
-                },
-                "description": "The arguments for the command"
-              },
-              "command": {
-                "type": "string",
-                "description": "The command template with placeholders for arguments"
-              },
-              "terminate": {
-                "type": "object",
-                "properties": {
-                  "signal": {
-                    "type": "string",
-                    "enum": [
-                      "SIGKILL",
-                      "SIGTERM",
-                      "SIGINT",
-                      "SIGQUIT"
-                    ],
-                    "default": "SIGTERM",
-                    "description": "Signal to send to the process when terminating, defaults to SIGTERM"
-                  },
-                  "timeout": {
-                    "type": "number",
-                    "description": "Maximum duration in milliseconds before the command is automatically terminated"
-                  },
-                  "output": {
-                    "type": "string",
-                    "description": "Automatically terminate if the output contains this string. Regex is supported using /.../ syntax (e.g., /error/)"
-                  }
-                },
-                "additionalProperties": false,
-                "description": "Conditions under which the command will be automatically terminated"
-              }
+        "default": {
+          "description": "Default value for the argument",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "description": "A brief description of the argument",
+          "type": "string"
+        },
+        "name": {
+          "description": "The name of the argument",
+          "type": "string"
+        },
+        "required": {
+          "description": "Whether the argument is required",
+          "type": "boolean",
+          "default": false
+        },
+        "type": {
+          "description": "The type of the argument (e.g., string, number, boolean)",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArgumentType"
             },
-            "required": [
-              "description",
-              "command"
-            ],
-            "additionalProperties": false
-          },
-          "description": "A collection of commands"
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
-        "commands"
-      ],
-      "additionalProperties": false,
-      "description": "A collection of commands with their specifications"
+        "name",
+        "description"
+      ]
+    },
+    "ArgumentType": {
+      "oneOf": [
+        {
+          "description": "String argument",
+          "type": "string",
+          "const": "string"
+        },
+        {
+          "description": "Number argument",
+          "type": "string",
+          "const": "number"
+        },
+        {
+          "description": "Boolean argument",
+          "type": "string",
+          "const": "boolean"
+        }
+      ]
+    },
+    "CommandSpec": {
+      "type": "object",
+      "properties": {
+        "args": {
+          "description": "The arguments for the command",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/ArgumentSpec"
+          }
+        },
+        "command": {
+          "description": "The command template",
+          "type": "string"
+        },
+        "description": {
+          "description": "A brief description of the command",
+          "type": "string"
+        }
+      },
+      "required": [
+        "description",
+        "command"
+      ]
+    },
+    "FlashOptions": {
+      "type": "object",
+      "properties": {
+        "baudrate": {
+          "description": "The baud rate for the flash operation",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "chip": {
+          "description": "The chip model to flash",
+          "type": "string"
+        },
+        "enabled": {
+          "description": "Whether flash tools are enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled",
+        "chip"
+      ]
+    },
+    "SerialOptions": {
+      "type": "object",
+      "properties": {
+        "baudrate": {
+          "description": "The baud rate for serial communication, default is 115200",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "enabled": {
+          "description": "Whether serial tools are enabled",
+          "type": "boolean"
+        },
+        "reset": {
+          "description": "Reset method. If specified, the tool will reset the device before each read",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SerialResetMethod"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reset_interval": {
+          "description": "Optional interval of milliseconds between the reset line is asserted and\ndeasserted. If not specified, the default is 100ms.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint64",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "enabled"
+      ]
+    },
+    "SerialResetMethod": {
+      "oneOf": [
+        {
+          "description": "Reset the device by asserting and deasserting DTR",
+          "type": "string",
+          "const": "dtr"
+        },
+        {
+          "description": "Reset the device by asserting and deasserting RTS",
+          "type": "string",
+          "const": "rts"
+        }
+      ]
     }
-  },
-  "$schema": "http://json-schema.org/draft-07/schema#"
+  }
 }
