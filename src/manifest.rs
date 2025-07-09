@@ -10,6 +10,9 @@ pub struct Manifest {
 
     /// Flash options for the manifest
     pub flash: Option<FlashOptions>,
+
+    /// Serial options for the manifest
+    pub serial: Option<SerialOptions>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
@@ -71,4 +74,32 @@ pub struct FlashOptions {
 
     /// The baud rate for the flash operation
     pub baudrate: Option<u32>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+pub enum SerialResetMethod {
+    /// Reset the device by asserting and deasserting DTR
+    #[serde(rename = "dtr")]
+    DTR,
+
+    /// Reset the device by asserting and deasserting RTS
+    #[serde(rename = "rts")]
+    RTS,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+pub struct SerialOptions {
+    /// Whether serial tools are enabled
+    pub enabled: bool,
+
+    /// The baud rate for serial communication, default is 115200
+    pub baudrate: Option<u32>,
+
+    /// Reset method. If specified, the tool will reset the device before each read
+    pub reset: Option<SerialResetMethod>,
+
+    /// Optional interval of milliseconds between the reset line is asserted and
+    /// deasserted. If not specified, the default is 100ms.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub reset_interval: Option<u64>,
 }

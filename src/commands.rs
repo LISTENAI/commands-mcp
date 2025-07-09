@@ -34,6 +34,12 @@ impl Commands {
             tool_router.merge(Self::flash_router());
         }
 
+        if let Some(opts) = &manifest.serial
+            && opts.enabled
+        {
+            tool_router.merge(Self::serial_router());
+        }
+
         Self {
             tool_router,
             cwd,

@@ -1,5 +1,6 @@
 mod commands;
 mod commands_flash;
+mod commands_serial;
 mod error;
 mod manifest;
 mod manifest_executor;

@@ -324,6 +324,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_yaml",
+ "serialport",
  "thiserror 2.0.12",
  "tokio",
 ]
