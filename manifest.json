@@ -1,0 +1,55 @@
+{
+  "dxt_version": "0.1",
+  "name": "Commands",
+  "version": "0.10.0",
+  "description": "Build MCP Server with command template",
+  "author": {
+    "name": "LISTENAI",
+    "url": "https://github.com/LISTENAI"
+  },
+  "server": {
+    "type": "binary",
+    "entry_point": "commands-mcp",
+    "mcp_config": {
+      "command": "commands-mcp",
+      "args": [
+        "${user_config.workspace_dir}"
+      ],
+      "platform_overrides": {
+        "darwin": {
+          "command": "${__dirname}/binaries/darwin-x64/commands-mcp"
+        },
+        "linux": {
+          "command": "${__dirname}/binaries/linux-x64/commands-mcp"
+        },
+        "win32": {
+          "command": "${__dirname}/binaries/win32-x64/commands-mcp.exe"
+        }
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LISTENAI/commands-mcp.git"
+  },
+  "homepage": "https://www.listenai.com/",
+  "documentation": "https://github.com/LISTENAI/commands-mcp",
+  "support": "https://github.com/LISTENAI/commands-mcp/issues",
+  "tools_generated": true,
+  "license": "Apache-2.0",
+  "compatibility": {
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ]
+  },
+  "user_config": {
+    "workspace_dir": {
+      "type": "directory",
+      "title": "Workspace Directory",
+      "description": "The root directory of your workspace",
+      "required": true
+    }
+  }
+}

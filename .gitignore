@@ -3,3 +3,4 @@ node_modules
 /commands.yaml
 /commands.schema.json
 *.tgz
+*.dxt
