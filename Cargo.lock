@@ -366,8 +366,8 @@ dependencies = [
 
 [[package]]
 name = "cskburn"
-version = "2.0.0-alpha.0"
-source = "git+ssh://git@github.com/LISTENAI/cskburn-rs.git?tag=2.0.0-beta.0#fd03b0a4eef3dc5c98342cf823b8212eb751a609"
+version = "2.0.0-alpha.1"
+source = "git+ssh://git@github.com/LISTENAI/cskburn-rs.git?tag=2.0.0-alpha.1#a89b953d148fbb2783cb3c9a9391860d01495c20"
 dependencies = [
  "binrw",
  "log",

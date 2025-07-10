@@ -78,7 +78,7 @@ Built-in tools for flashing firmware to LISTENAI devices.
 ```yaml
 flash:
   enabled: true         # Enable flash tools
-  chip: arcs            # Chip model, can be '6', 'arcs'
+  chip: mars            # Chip model, can be '6', 'mars'
   baudrate: 1500000     # Baud rate for flashing, defaults to 1500000
 ```
 

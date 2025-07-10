@@ -90,11 +90,9 @@ impl Commands {
             ));
         }
 
-        cskburn
-            .memory_write(&mut burner, None, Some(&mut |_, _| {}))
-            .map_err(|e| {
-                McpError::internal_error(format!("Failed to write burner: {}", e), None)
-            })?;
+        cskburn.memory_write(&mut burner, None).map_err(|e| {
+            McpError::internal_error(format!("Failed to write burner: {}", e), None)
+        })?;
 
         cskburn
             .probe(ProbeTarget::Burner, Some(PROBE_SYNC_ATTEMPTS))
@@ -110,7 +108,7 @@ impl Commands {
             .map_err(|e| McpError::invalid_params(format!("Failed to read image: {}", e), None))?;
 
         cskburn
-            .flash_write(&mut source, Some(&mut |_, _| {}))
+            .flash_write(&mut source)
             .map_err(|e| McpError::internal_error(format!("Failed to write image: {}", e), None))?;
 
         cskburn.reset(false, Some(RESET_INTERVAL)).map_err(|e| {
