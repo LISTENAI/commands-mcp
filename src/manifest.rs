@@ -24,6 +24,11 @@ pub struct CommandSpec {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub args: Option<Vec<ArgumentSpec>>,
 
+    /// The shell used to execute the command. Defaults to "bash" on Unix-like
+    /// systems and "powershell" on Windows. Also supports "python" for using
+    /// Python script in the command.
+    pub shell: Option<String>,
+
     /// The command template
     pub command: String,
 }

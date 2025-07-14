@@ -66,6 +66,7 @@ For code completion on the `commands.yaml` file, [redhat.vscode-yaml](https://ma
       * `required`: Whether the argument is required (defaults to `false`).
       * `default`: The default value for the argument, if it is not required.
     * `command`: The command to run. Supports [Handlebars](https://handlebarsjs.com/guide/expressions.html) templating for arguments.
+    * `shell`: The shell used to execute the command. Defaults to "bash" on Unix-like systems and "powershell" on Windows. Also supports "python" for using Python script in the command.
 
 ## Built-in tools
 
