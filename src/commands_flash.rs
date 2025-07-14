@@ -1,6 +1,6 @@
 use std::{str::FromStr, time::Duration};
 
-use cskburn::{Family, Image, ProbeTarget};
+use cskburn::{CSKBurn, Family, Image, ProbeTarget, WriteTarget};
 use rmcp::{
     Error as McpError,
     handler::server::tool::Parameters,
@@ -64,8 +64,7 @@ impl Commands {
 
         let mut burner = chip.burner();
 
-        let mut cskburn = cskburn::new(port.clone(), baud, chip)
-            .open()
+        let mut cskburn = CSKBurn::connect(&port, baud, chip)
             .map_err(|e| McpError::internal_error(format!("Failed to open device: {}", e), None))?;
 
         let mut probed = false;
@@ -90,9 +89,11 @@ impl Commands {
             ));
         }
 
-        cskburn.memory_write(&mut burner, None).map_err(|e| {
-            McpError::internal_error(format!("Failed to write burner: {}", e), None)
-        })?;
+        cskburn
+            .write(&mut burner, WriteTarget::Memory { action: None })
+            .map_err(|e| {
+                McpError::internal_error(format!("Failed to write burner: {}", e), None)
+            })?;
 
         cskburn
             .probe(ProbeTarget::Burner, Some(PROBE_SYNC_ATTEMPTS))
@@ -108,7 +109,7 @@ impl Commands {
             .map_err(|e| McpError::invalid_params(format!("Failed to read image: {}", e), None))?;
 
         cskburn
-            .flash_write(&mut source)
+            .write(&mut source, WriteTarget::Flash)
             .map_err(|e| McpError::internal_error(format!("Failed to write image: {}", e), None))?;
 
         cskburn.reset(false, Some(RESET_INTERVAL)).map_err(|e| {
