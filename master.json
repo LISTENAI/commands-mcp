@@ -116,6 +116,13 @@
         "description": {
           "description": "A brief description of the command",
           "type": "string"
+        },
+        "shell": {
+          "description": "The shell used to execute the command. Defaults to \"bash\" on Unix-like\nsystems and \"powershell\" on Windows. Also supports \"python\" for using\nPython script in the command.",
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "required": [
