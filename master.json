@@ -123,6 +123,13 @@
             "string",
             "null"
           ]
+        },
+        "venv": {
+          "description": "For command that `shell` is set to \"python\", specify the path to the\nPython virtual environment to use. With this option, the script will be\nexecuted in the specified virtual environment.",
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "required": [
