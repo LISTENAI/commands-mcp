@@ -25,7 +25,7 @@ if (!config) {
   throw new Error(`Unsupported platform: ${process.platform}-${process.arch}`);
 }
 
-const packageDir = new URL('.', import.meta.url).pathname;
+const packageDir = decodeURIComponent(new URL('.', import.meta.url).pathname);
 
 const executable = [
   resolve(packageDir, 'binaries', target, `commands-mcp${config.suffix}`),
