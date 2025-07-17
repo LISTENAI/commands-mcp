@@ -189,7 +189,7 @@ jobs:
   publish-github:
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
-    needs: build
+    needs: [ build, pack-dxt ]
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
@@ -209,6 +209,12 @@ jobs:
             fi
             popd
           done
+
+      - name: Download DXT artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dxt
+          path: assets
 
       - name: Upload release assets
         uses: svenstaro/upload-release-action@2.11.2
