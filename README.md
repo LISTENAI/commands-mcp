@@ -69,6 +69,21 @@ For code completion on the `commands.yaml` file, [redhat.vscode-yaml](https://ma
     * `shell`: The shell used to execute the command. Defaults to "bash" on Unix-like systems and "powershell" on Windows. Also supports "python" for using Python script in the command.
     * `venv`: Optional path to a Python virtual environment to use when the shell is set to "python". If specified, the command will be executed in the specified virtual environment.
 
+### Python support
+
+If the `shell` is set to `python`, the command will be executed using Python. If a virtual environment is specified in the `venv` field, it will be activated before executing the command.
+
+```yaml
+commands:
+  some_python_script:
+    description: A python script that does something
+    shell: python
+    venv: .venv
+    command: |
+      import sys
+      print(f"Running Python {sys.version} in virtual environment {sys.prefix}")
+```
+
 ## Built-in tools
 
 In addition to the commands defined in `commands.yaml`, the MCP Server provides several built-in tools, which can be enabled in the `commands.yaml` file with corresponding configuration.
