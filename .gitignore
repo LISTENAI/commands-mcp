@@ -6,3 +6,5 @@ node_modules
 /commands.schema.json
 *.tgz
 *.dxt
+.venv
+.vscode

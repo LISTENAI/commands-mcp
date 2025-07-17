@@ -31,6 +31,11 @@ pub struct CommandSpec {
 
     /// The command template
     pub command: String,
+
+    /// For command that `shell` is set to "python", specify the path to the
+    /// Python virtual environment to use. With this option, the script will be
+    /// executed in the specified virtual environment.
+    pub venv: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
