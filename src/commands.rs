@@ -56,15 +56,13 @@ impl Commands {
         spec.validate(args)
             .map_err(|e| McpError::invalid_params(format!("Invalid argument: {}", e), None))?;
 
-        let (command, output, exit_code) = spec
+        let (_command, output, exit_code) = spec
             .execute(&self.handlebars, args, &self.cwd)
             .map_err(|e| {
                 McpError::invalid_params(format!("Command execution error: {}", e), None)
             })?;
 
         let mut response = String::new();
-
-        response.push_str(&format!("## Command\n\n```\n{}\n```\n\n", command.trim()));
 
         if !output.is_empty() {
             response.push_str(&format!("## Output\n\n```\n{}\n```\n\n", output.trim()));
