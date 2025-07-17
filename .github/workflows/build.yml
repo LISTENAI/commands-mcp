@@ -128,7 +128,7 @@ jobs:
             chmod +x binaries/${platform}/commands-mcp*
           done
           mkdir -p dxt
-          mv -v binaries manifest.json dxt/
+          mv -v binaries manifest.json npm-wrapper.mjs dxt/
           npx -y @anthropic-ai/dxt pack dxt commands-mcp.dxt
 
       - name: Archive DXT

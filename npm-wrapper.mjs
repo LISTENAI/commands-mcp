@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import { resolve } from 'path';
-import { accessSync, constants } from 'fs';
-import { spawnSync } from 'child_process';
+import { accessSync, chmodSync, constants } from 'fs';
+import { spawn } from 'child_process';
 
 const platforms = {
   'darwin-arm64': {
@@ -32,7 +32,7 @@ const executable = [
   resolve(packageDir, 'target', 'release', `commands-mcp${config.suffix}`),
 ].find((path) => {
   try {
-    accessSync(path, constants.X_OK);
+    accessSync(path, constants.R_OK);
     return true;
   } catch {
     return false;
@@ -42,8 +42,20 @@ if (!executable) {
   throw new Error(`Executable not found for platform: ${process.platform}-${process.arch}`);
 }
 
+if (process.platform != 'win32') {
+  try {
+    accessSync(executable, constants.X_OK);
+  } catch {
+    chmodSync(executable, 0o755);
+  }
+}
+
 const args = process.argv.slice(2);
 
-spawnSync(executable, args, {
-  stdio: 'inherit',
+const server = spawn(executable, args);
+process.stdin.pipe(server.stdin);
+server.stdout.pipe(process.stdout);
+server.stderr.pipe(process.stderr);
+server.once('exit', (code) => {
+  process.exit(code);
 });
