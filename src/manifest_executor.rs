@@ -34,7 +34,7 @@ impl CommandSpec {
         };
 
         let mut proc = shell
-            .to_command(&self, cwd)
+            .to_command(&command)
             .current_dir(cwd)
             .stdout(writer.try_clone().map_err(|e| {
                 McpError::internal_error(
@@ -96,36 +96,24 @@ impl FromStr for Shell {
 }
 
 impl Shell {
-    pub fn to_command(&self, spec: &CommandSpec, cwd: &PathBuf) -> Command {
+    pub fn to_command(&self, command: &str) -> Command {
         match self {
             Shell::Bash => {
                 let mut cmd = Command::new("bash");
-                cmd.arg("-c").arg(normalize_newlines(&spec.command, false));
+                cmd.arg("-c").arg(normalize_newlines(command, false));
                 cmd
             }
             Shell::PowerShell => {
                 let mut cmd = Command::new("powershell");
                 cmd.arg("-Command").arg(format!(
                     "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8\r\n{}",
-                    normalize_newlines(&spec.command, true)
+                    normalize_newlines(command, true)
                 ));
-                cmd
-            }
-            Shell::Python if spec.venv.is_some() => {
-                let venv = cwd.join(spec.venv.as_ref().unwrap());
-                let python = if cfg!(windows) {
-                    venv.join("Scripts/python.exe")
-                } else {
-                    venv.join("bin/python")
-                };
-                let mut cmd = Command::new(python);
-                cmd.arg("-c").arg(normalize_newlines(&spec.command, false));
-                cmd.env("VIRTUAL_ENV", venv);
                 cmd
             }
             Shell::Python => {
                 let mut cmd = Command::new("python");
-                cmd.arg("-c").arg(normalize_newlines(&spec.command, false));
+                cmd.arg("-c").arg(normalize_newlines(command, false));
                 cmd
             }
         }
