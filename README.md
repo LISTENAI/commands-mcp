@@ -67,7 +67,7 @@ For code completion on the `commands.yaml` file, [redhat.vscode-yaml](https://ma
       * `default`: The default value for the argument, if it is not required.
     * `command`: The command to run. Supports [Handlebars](https://handlebarsjs.com/guide/expressions.html) templating for arguments.
     * `shell`: The shell used to execute the command. Defaults to "bash" on Unix-like systems and "powershell" on Windows. Also supports "python" for using Python script in the command.
-    * `venv`: Optional path to a Python virtual environment to use when the shell is set to "python". If specified, the command will be executed in the specified virtual environment.
+    * `venv`: Optional path to a Python virtual environment to use. If specified, the command will be executed with the specified venv activated.
 
 ### Python support
 

@@ -32,10 +32,11 @@ pub struct CommandSpec {
     /// The command template
     pub command: String,
 
-    /// For command that `shell` is set to "python", specify the path to the
-    /// Python virtual environment to use. With this option, the script will be
-    /// executed in the specified virtual environment.
-    pub venv: Option<String>,
+    /// Whether to activate a Python Virtual Environment (venv) when executing
+    /// the command. If set to `true`, the venv will be activated from the path
+    /// `.venv`. Can also be a path to a specific venv.
+    #[serde(default)]
+    pub venv: VirtualEnv,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
@@ -72,6 +73,19 @@ pub enum ArgumentType {
     /// Boolean argument
     #[serde(rename = "boolean")]
     Boolean,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[serde(untagged)]
+pub enum VirtualEnv {
+    UseDefault(bool),
+    Path(String),
+}
+
+impl Default for VirtualEnv {
+    fn default() -> Self {
+        VirtualEnv::UseDefault(false)
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]

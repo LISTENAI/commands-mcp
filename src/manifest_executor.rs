@@ -1,4 +1,5 @@
 use std::{
+    env::{join_paths, split_paths, var_os},
     io::{Read, pipe},
     path::PathBuf,
     process::Command,
@@ -9,7 +10,7 @@ use handlebars::Handlebars;
 use rmcp::Error as McpError;
 use serde_json::Value as JsonValue;
 
-use crate::manifest::CommandSpec;
+use crate::manifest::{CommandSpec, VirtualEnv};
 
 impl CommandSpec {
     pub fn execute(
@@ -36,6 +37,7 @@ impl CommandSpec {
         let mut proc = shell
             .to_command(&command)
             .current_dir(cwd)
+            .envs(self.venv.to_envs(cwd)?)
             .stdout(writer.try_clone().map_err(|e| {
                 McpError::internal_error(
                     format!("Failed creating stdio pipes for child process: {}", e),
@@ -126,5 +128,35 @@ fn normalize_newlines(command: &str, wants_cr_lf: bool) -> String {
         command.replace("\n", "\r\n")
     } else {
         command
+    }
+}
+
+impl VirtualEnv {
+    pub fn to_envs(&self, cwd: &PathBuf) -> Result<Vec<(String, String)>, McpError> {
+        match self {
+            VirtualEnv::UseDefault(false) => Ok(vec![]),
+            VirtualEnv::UseDefault(true) => Self::envs(cwd.join(".venv")),
+            VirtualEnv::Path(path) => Self::envs(cwd.join(path)),
+        }
+    }
+
+    fn envs(venv: PathBuf) -> Result<Vec<(String, String)>, McpError> {
+        let bin_dir = venv.join(if cfg!(windows) { "Scripts" } else { "bin" });
+
+        let path = match var_os("PATH") {
+            Some(path) => {
+                let mut paths = split_paths(&path).collect::<Vec<_>>();
+                paths.insert(0, bin_dir);
+                join_paths(paths).map_err(|e| {
+                    McpError::internal_error(format!("Failed joining paths: {}", e), None)
+                })?
+            }
+            None => bin_dir.into_os_string(),
+        };
+
+        Ok(vec![
+            ("PATH".into(), path.to_string_lossy().into()),
+            ("VIRTUAL_ENV".into(), venv.to_string_lossy().into()),
+        ])
     }
 }
