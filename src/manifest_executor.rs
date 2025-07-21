@@ -28,17 +28,10 @@ impl CommandSpec {
             McpError::internal_error(format!("Failed creating stdio pipes: {}", e), None)
         })?;
 
-        let mut shell = match self.shell {
+        let shell = match self.shell {
             None => Shell::default(),
             Some(ref s) => Shell::from_str(s)?,
         };
-
-        if shell == Shell::Python
-            && let Some(ref venv) = self.venv
-        {
-            let venv = cwd.join(venv);
-            shell = Shell::PythonInVirtualEnv { venv };
-        }
 
         let mut proc = shell
             .to_command(&command)
@@ -70,12 +63,10 @@ impl CommandSpec {
     }
 }
 
-#[derive(PartialEq)]
 enum Shell {
     Bash,
     PowerShell,
     Python,
-    PythonInVirtualEnv { venv: PathBuf },
 }
 
 impl Default for Shell {
@@ -123,17 +114,6 @@ impl Shell {
             Shell::Python => {
                 let mut cmd = Command::new("python");
                 cmd.arg("-c").arg(normalize_newlines(command, false));
-                cmd
-            }
-            Shell::PythonInVirtualEnv { venv } => {
-                let python = if cfg!(windows) {
-                    venv.join("Scripts/python.exe")
-                } else {
-                    venv.join("bin/python")
-                };
-                let mut cmd = Command::new(python);
-                cmd.arg("-c").arg(normalize_newlines(command, false));
-                cmd.env("VIRTUAL_ENV", venv);
                 cmd
             }
         }
