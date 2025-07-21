@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct Manifest {
     /// A collection of commands
-    pub commands: HashMap<String, CommandSpec>,
+    pub commands: BTreeMap<String, CommandSpec>,
 
     /// Flash options for the manifest
     pub flash: Option<FlashOptions>,
