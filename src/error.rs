@@ -8,5 +8,5 @@ pub enum ManifestError {
     FileRead(PathBuf, std::io::Error),
 
     #[error("Failed to parse manifest file {0}: {1}")]
-    Parse(PathBuf, serde_yaml::Error),
+    Parse(PathBuf, serde_yml::Error),
 }

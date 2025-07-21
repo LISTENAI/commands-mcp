@@ -7,7 +7,7 @@ impl Manifest {
         let content = read_to_string(&path)
             .map_err(|e| crate::error::ManifestError::FileRead(path.clone(), e))?;
 
-        let manifest: Self = serde_yaml::from_str(&content)
+        let manifest: Self = serde_yml::from_str(&content)
             .map_err(|e| crate::error::ManifestError::Parse(path, e))?;
 
         Ok(manifest)
