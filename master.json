@@ -125,11 +125,9 @@
           ]
         },
         "venv": {
-          "description": "For command that `shell` is set to \"python\", specify the path to the\nPython virtual environment to use. With this option, the script will be\nexecuted in the specified virtual environment.",
-          "type": [
-            "string",
-            "null"
-          ]
+          "description": "Whether to activate a Python Virtual Environment (venv) when executing\nthe command. If set to `true`, the venv will be activated from the path\n`.venv`. Can also be a path to a specific venv.",
+          "$ref": "#/$defs/VirtualEnv",
+          "default": false
         }
       },
       "required": [
@@ -215,6 +213,16 @@
           "description": "Reset the device by asserting and deasserting RTS",
           "type": "string",
           "const": "rts"
+        }
+      ]
+    },
+    "VirtualEnv": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string"
         }
       ]
     }
