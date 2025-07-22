@@ -1,6 +1,6 @@
 {
   "name": "@listenai/commands-mcp",
-  "version": "0.12.1",
+  "version": "0.13.0",
   "description": "Build MCP Server with command template",
   "license": "Apache-2.0",
   "author": "LISTENAI",
