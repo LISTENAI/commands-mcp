@@ -97,32 +97,40 @@ impl FromStr for Shell {
     }
 }
 
+macro_rules! command {
+    ($program:expr $(, $arg:expr)* $(,)?) => {{
+        let mut cmd = std::process::Command::new($program);
+        $(
+            cmd.arg($arg);
+        )*
+        cmd
+    }};
+}
+
 impl Shell {
     pub fn to_command(&self, command: &str) -> Command {
         match self {
-            Shell::Bash => {
-                let mut cmd = Command::new("bash");
-                cmd.arg("-c").arg(normalize_newlines(command, false));
-                cmd
-            }
-            Shell::PowerShell => {
-                let mut cmd = Command::new("powershell");
-                cmd.arg("-Command").arg(format!(
+            Shell::Bash => command!("bash", "-c", normalize_newlines(command, false)),
+            Shell::PowerShell => command!(
+                "powershell",
+                "-Command",
+                format!(
                     "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8\r\n{}",
                     normalize_newlines(command, true)
-                ));
-                cmd
-            }
+                )
+            ),
             Shell::Python => {
-                let mut cmd = if cfg!(windows) {
-                    Command::new("python")
+                if cfg!(windows) {
+                    command!("python", "-c", normalize_newlines(command, false))
                 } else {
-                    let mut cmd = Command::new("/usr/bin/env");
-                    cmd.arg("-S").arg("python3");
-                    cmd
-                };
-                cmd.arg("-c").arg(normalize_newlines(command, false));
-                cmd
+                    command!(
+                        "/usr/bin/env",
+                        "-S",
+                        "python3",
+                        "-c",
+                        normalize_newlines(command, false)
+                    )
+                }
             }
         }
     }
