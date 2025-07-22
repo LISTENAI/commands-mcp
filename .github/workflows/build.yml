@@ -68,25 +68,20 @@ jobs:
           name: schema
           path: commands.schema.json
 
-  pack-npm:
+  publish-npm:
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     needs: build
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           pattern: commands-mcp_*
 
-      - name: Pack
-        id: pack
+      - name: Gather binaries
         run: |
           for dir in commands-mcp_*; do
             platform=${dir#commands-mcp_}
@@ -94,13 +89,12 @@ jobs:
             mv -v ${dir}/commands-mcp* binaries/${platform}/
             chmod +x binaries/${platform}/commands-mcp*
           done
-          echo "tarball=$(npm pack)" >> "$GITHUB_OUTPUT"
 
-      - name: Archive tarball
-        uses: actions/upload-artifact@v4
+      - name: Publish to NPM
+        uses: JS-DevTools/npm-publish@v3
         with:
-          name: npm-tarball
-          path: ${{ steps.pack.outputs.tarball }}
+          token: ${{ secrets.NPM_TOKEN }}
+          access: public
 
   pack-dxt:
     runs-on: ubuntu-latest
@@ -119,7 +113,7 @@ jobs:
         with:
           pattern: commands-mcp_*
 
-      - name: Pack DXT
+      - name: Gather binaries
         run: |
           for dir in commands-mcp_*; do
             platform=${dir#commands-mcp_}
@@ -127,6 +121,9 @@ jobs:
             mv -v ${dir}/commands-mcp* binaries/${platform}/
             chmod +x binaries/${platform}/commands-mcp*
           done
+
+      - name: Pack DXT
+        run: |
           mkdir -p dxt
           mv -v binaries manifest.json npm-wrapper.mjs dxt/
           npx -y @anthropic-ai/dxt pack dxt commands-mcp.dxt
