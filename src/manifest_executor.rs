@@ -114,7 +114,13 @@ impl Shell {
                 cmd
             }
             Shell::Python => {
-                let mut cmd = Command::new("python");
+                let mut cmd = if cfg!(windows) {
+                    Command::new("python")
+                } else {
+                    let mut cmd = Command::new("/usr/bin/env");
+                    cmd.arg("-S").arg("python3");
+                    cmd
+                };
                 cmd.arg("-c").arg(normalize_newlines(command, false));
                 cmd
             }
