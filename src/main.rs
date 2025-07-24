@@ -1,11 +1,15 @@
 mod commands;
 mod commands_flash;
+mod commands_schematic;
 mod commands_serial;
 mod error;
 mod manifest;
 mod manifest_executor;
 mod manifest_reader;
 mod manifest_schema;
+mod schematic;
+mod schematic_lookup;
+mod schematic_reader;
 
 use std::{env::current_dir, path::PathBuf};
 
@@ -13,6 +17,8 @@ use anyhow::Result;
 use clap::{Parser, crate_description};
 use commands::Commands;
 use rmcp::{ServiceExt, transport::stdio};
+
+use crate::manifest_reader::ManifestReader;
 
 #[derive(Parser)]
 #[command(author, version, about = crate_description!())]
@@ -36,7 +42,7 @@ async fn main() -> Result<()> {
 
     let manifest_path = working_directory.join(&args.manifest);
 
-    let manifest = manifest::Manifest::from(manifest_path)
+    let manifest = manifest::Manifest::read_from(manifest_path)
         .map_err(|e| anyhow::anyhow!("Failed to load manifest: {}", e))?;
 
     let service = Commands::new(working_directory, manifest)
