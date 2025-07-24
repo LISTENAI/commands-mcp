@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, path::PathBuf};
 
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -13,6 +13,9 @@ pub struct Manifest {
 
     /// Serial options for the manifest
     pub serial: Option<SerialOptions>,
+
+    /// Schematic options for the manifest
+    pub schematic: Option<SchematicOptions>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
@@ -140,4 +143,29 @@ fn default_serial_baudrate() -> u32 {
 
 fn default_reset_interval() -> u64 {
     100
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+pub struct SchematicOptions {
+    /// Whether schematic tools are enabled
+    pub enabled: bool,
+
+    /// Board name
+    pub board: String,
+
+    /// Directory where the SoC metadata is stored, defaults to "schematic/socs"
+    #[serde(default = "default_socs_dir")]
+    pub socs_dir: PathBuf,
+
+    /// Directory where the board metadata is stored, defaults to "schematic/boards"
+    #[serde(default = "default_boards_dir")]
+    pub boards_dir: PathBuf,
+}
+
+fn default_socs_dir() -> PathBuf {
+    "schematic/socs".into()
+}
+
+fn default_boards_dir() -> PathBuf {
+    "schematic/boards".into()
 }
