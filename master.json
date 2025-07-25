@@ -21,6 +21,17 @@
         }
       ]
     },
+    "schematic": {
+      "description": "Schematic options for the manifest",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SchematicOptions"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "serial": {
       "description": "Serial options for the manifest",
       "anyOf": [
@@ -140,11 +151,9 @@
       "properties": {
         "baudrate": {
           "description": "The baud rate for the flash operation",
-          "type": [
-            "integer",
-            "null"
-          ],
+          "type": "integer",
           "format": "uint32",
+          "default": 1500000,
           "minimum": 0
         },
         "chip": {
@@ -161,16 +170,41 @@
         "chip"
       ]
     },
+    "SchematicOptions": {
+      "type": "object",
+      "properties": {
+        "board": {
+          "description": "Board name",
+          "type": "string"
+        },
+        "boards_dir": {
+          "description": "Directory where the board metadata is stored, defaults to \"schematic/boards\"",
+          "type": "string",
+          "default": "schematic/boards"
+        },
+        "enabled": {
+          "description": "Whether schematic tools are enabled",
+          "type": "boolean"
+        },
+        "socs_dir": {
+          "description": "Directory where the SoC metadata is stored, defaults to \"schematic/socs\"",
+          "type": "string",
+          "default": "schematic/socs"
+        }
+      },
+      "required": [
+        "enabled",
+        "board"
+      ]
+    },
     "SerialOptions": {
       "type": "object",
       "properties": {
         "baudrate": {
           "description": "The baud rate for serial communication, default is 115200",
-          "type": [
-            "integer",
-            "null"
-          ],
+          "type": "integer",
           "format": "uint32",
+          "default": 115200,
           "minimum": 0
         },
         "enabled": {
@@ -190,11 +224,9 @@
         },
         "reset_interval": {
           "description": "Optional interval of milliseconds between the reset line is asserted and\ndeasserted. If not specified, the default is 100ms.",
-          "type": [
-            "integer",
-            "null"
-          ],
+          "type": "integer",
           "format": "uint64",
+          "default": 100,
           "minimum": 0
         }
       },
