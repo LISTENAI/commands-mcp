@@ -97,7 +97,12 @@ pub struct FlashOptions {
     pub chip: String,
 
     /// The baud rate for the flash operation
-    pub baudrate: Option<u32>,
+    #[serde(default = "default_flash_baudrate")]
+    pub baudrate: u32,
+}
+
+fn default_flash_baudrate() -> u32 {
+    1500000
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
@@ -117,13 +122,22 @@ pub struct SerialOptions {
     pub enabled: bool,
 
     /// The baud rate for serial communication, default is 115200
-    pub baudrate: Option<u32>,
+    #[serde(default = "default_serial_baudrate")]
+    pub baudrate: u32,
 
     /// Reset method. If specified, the tool will reset the device before each read
     pub reset: Option<SerialResetMethod>,
 
     /// Optional interval of milliseconds between the reset line is asserted and
     /// deasserted. If not specified, the default is 100ms.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub reset_interval: Option<u64>,
+    #[serde(default = "default_reset_interval")]
+    pub reset_interval: u64,
+}
+
+fn default_serial_baudrate() -> u32 {
+    115200
+}
+
+fn default_reset_interval() -> u64 {
+    100
 }

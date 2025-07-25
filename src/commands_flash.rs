@@ -60,11 +60,9 @@ impl Commands {
         let chip =
             Family::from_str(&flash_opts.chip).map_err(|e| McpError::invalid_params(e, None))?;
 
-        let baud = flash_opts.baudrate.unwrap_or(1500000);
-
         let mut burner = chip.burner();
 
-        let mut cskburn = CSKBurn::connect(&port, baud, chip)
+        let mut cskburn = CSKBurn::connect(&port, flash_opts.baudrate, chip)
             .map_err(|e| McpError::internal_error(format!("Failed to open device: {}", e), None))?;
 
         let mut probed = false;
@@ -122,7 +120,7 @@ impl Commands {
         let mut response = String::new();
         response.push_str("## Device Info\n\n");
         response.push_str(format!("* Port: {}\n", port).as_str());
-        response.push_str(format!("* Baud rate: {}\n", baud).as_str());
+        response.push_str(format!("* Baud rate: {}\n", flash_opts.baudrate).as_str());
         response.push_str(format!("* Chip model: {}\n", flash_opts.chip).as_str());
         response.push_str("\n");
         response.push_str("## Flashing Summary\n\n");

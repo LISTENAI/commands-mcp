@@ -178,16 +178,14 @@ impl Commands {
 }
 
 fn serial_open(path: &str, opts: &SerialOptions) -> serialport::Result<Box<dyn SerialPort>> {
-    let baud_rate = opts.baudrate.unwrap_or(115200);
-
-    serialport::new(path, baud_rate)
+    serialport::new(path, opts.baudrate)
         .flow_control(serialport::FlowControl::None)
         .dtr_on_open(false)
         .open()
 }
 
 fn serial_reset(port: &mut Box<dyn SerialPort>, opts: &SerialOptions) -> serialport::Result<()> {
-    let interval = Duration::from_millis(opts.reset_interval.unwrap_or(100));
+    let interval = Duration::from_millis(opts.reset_interval);
 
     match opts.reset {
         Some(SerialResetMethod::DTR) => {
