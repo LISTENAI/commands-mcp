@@ -45,7 +45,7 @@
           "type": "string"
         },
         "pinmux": {
-          "description": "List of functions that the pin can perform\n\nCan be names constructed with the format `<peripheral>.<signal>` (e.g.,\n`uart0.txd`, `i2c0.sda`) or just the function name (e.g., `gpio`, `pwm`).",
+          "description": "List of functions that the pin can perform\n\nCan be names constructed with the format `peripheral.signal` (e.g.,\n`uart0.txd`, `i2c0.sda`) or just the function name (e.g., `gpio`, `pwm`).",
           "type": "array",
           "items": {
             "$ref": "#/$defs/Function"

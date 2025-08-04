@@ -53,7 +53,7 @@
           }
         },
         "connects": {
-          "description": "Pins connected to the device\n\nEach connection is represented as a string in the format `<pin_name>@<function>`,\ne.g., `PB2@uart0.txd`.",
+          "description": "Pins connected to the device\n\nEach connection is represented as a string in the format `pin_name@function`,\ne.g., `PB2@uart0.txd`.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/Connection"
@@ -110,7 +110,7 @@
           "type": "string"
         },
         "pinmux": {
-          "description": "List of functions that the pin can perform\n\nCan be names constructed with the format `<peripheral>.<signal>` (e.g.,\n`uart0.txd`, `i2c0.sda`) or just the function name (e.g., `gpio`, `pwm`).",
+          "description": "List of functions that the pin can perform\n\nCan be names constructed with the format `peripheral.signal` (e.g.,\n`uart0.txd`, `i2c0.sda`) or just the function name (e.g., `gpio`, `pwm`).",
           "type": "array",
           "items": {
             "$ref": "#/$defs/Function"
