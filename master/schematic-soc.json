@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Soc",
+  "type": "object",
+  "properties": {
+    "buses": {
+      "description": "List of bus peripherals, which can be used by more than one external device",
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "string"
+      }
+    },
+    "description": {
+      "description": "Description of the SoC",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "name": {
+      "description": "Name of the SoC",
+      "type": "string"
+    },
+    "pins": {
+      "description": "List of available pins on the SoC",
+      "type": "array",
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Pin"
+      }
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "$defs": {
+    "Function": {
+      "oneOf": [
+        {
+          "description": "A simple function that doesn't have explicit signal pins, e.g., `gpio`, `pwm`",
+          "type": "object",
+          "properties": {
+            "Simple": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "Simple"
+          ]
+        },
+        {
+          "description": "A function that is associated with a specific peripheral and signal, e.g., `uart0.txd`",
+          "type": "object",
+          "properties": {
+            "Peripheral": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "signal": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "signal"
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "Peripheral"
+          ]
+        }
+      ]
+    },
+    "Pin": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the pin or pad (e.g., `GPIO0`, `PB2`)",
+          "type": "string"
+        },
+        "pinmux": {
+          "description": "List of functions that the pin can perform\n\nCan be names constructed with the format `<peripheral>.<signal>` (e.g.,\n`uart0.txd`, `i2c0.sda`) or just the function name (e.g., `gpio`, `pwm`).",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Function"
+          }
+        }
+      },
+      "required": [
+        "name",
+        "pinmux"
+      ]
+    }
+  }
+}

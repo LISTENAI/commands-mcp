@@ -1,0 +1,262 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Manifest",
+  "type": "object",
+  "properties": {
+    "commands": {
+      "description": "A collection of commands",
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/CommandSpec"
+      }
+    },
+    "flash": {
+      "description": "Flash options for the manifest",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/FlashOptions"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "schematic": {
+      "description": "Schematic options for the manifest",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SchematicOptions"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "serial": {
+      "description": "Serial options for the manifest",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SerialOptions"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "commands"
+  ],
+  "$defs": {
+    "ArgumentSpec": {
+      "type": "object",
+      "properties": {
+        "default": {
+          "description": "Default value for the argument",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "description": "A brief description of the argument",
+          "type": "string"
+        },
+        "name": {
+          "description": "The name of the argument",
+          "type": "string"
+        },
+        "required": {
+          "description": "Whether the argument is required",
+          "type": "boolean",
+          "default": false
+        },
+        "type": {
+          "description": "The type of the argument (e.g., string, number, boolean)",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArgumentType"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "description"
+      ]
+    },
+    "ArgumentType": {
+      "oneOf": [
+        {
+          "description": "String argument",
+          "type": "string",
+          "const": "string"
+        },
+        {
+          "description": "Number argument",
+          "type": "string",
+          "const": "number"
+        },
+        {
+          "description": "Boolean argument",
+          "type": "string",
+          "const": "boolean"
+        }
+      ]
+    },
+    "CommandSpec": {
+      "type": "object",
+      "properties": {
+        "args": {
+          "description": "The arguments for the command",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/ArgumentSpec"
+          }
+        },
+        "command": {
+          "description": "The command template",
+          "type": "string"
+        },
+        "description": {
+          "description": "A brief description of the command",
+          "type": "string"
+        },
+        "shell": {
+          "description": "The shell used to execute the command. Defaults to \"bash\" on Unix-like\nsystems and \"powershell\" on Windows. Also supports \"python\" for using\nPython script in the command.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "venv": {
+          "description": "Whether to activate a Python Virtual Environment (venv) when executing\nthe command. If set to `true`, the venv will be activated from the path\n`.venv`. Can also be a path to a specific venv.",
+          "$ref": "#/$defs/VirtualEnv",
+          "default": false
+        }
+      },
+      "required": [
+        "description",
+        "command"
+      ]
+    },
+    "FlashOptions": {
+      "type": "object",
+      "properties": {
+        "baudrate": {
+          "description": "The baud rate for the flash operation",
+          "type": "integer",
+          "format": "uint32",
+          "default": 1500000,
+          "minimum": 0
+        },
+        "chip": {
+          "description": "The chip model to flash",
+          "type": "string"
+        },
+        "enabled": {
+          "description": "Whether flash tools are enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled",
+        "chip"
+      ]
+    },
+    "SchematicOptions": {
+      "type": "object",
+      "properties": {
+        "board": {
+          "description": "Board name",
+          "type": "string"
+        },
+        "boards_dir": {
+          "description": "Directory where the board metadata is stored, defaults to \"schematic/boards\"",
+          "type": "string",
+          "default": "schematic/boards"
+        },
+        "enabled": {
+          "description": "Whether schematic tools are enabled",
+          "type": "boolean"
+        },
+        "socs_dir": {
+          "description": "Directory where the SoC metadata is stored, defaults to \"schematic/socs\"",
+          "type": "string",
+          "default": "schematic/socs"
+        }
+      },
+      "required": [
+        "enabled",
+        "board"
+      ]
+    },
+    "SerialOptions": {
+      "type": "object",
+      "properties": {
+        "baudrate": {
+          "description": "The baud rate for serial communication, default is 115200",
+          "type": "integer",
+          "format": "uint32",
+          "default": 115200,
+          "minimum": 0
+        },
+        "enabled": {
+          "description": "Whether serial tools are enabled",
+          "type": "boolean"
+        },
+        "reset": {
+          "description": "Reset method. If specified, the tool will reset the device before each read",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SerialResetMethod"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reset_interval": {
+          "description": "Optional interval of milliseconds between the reset line is asserted and\ndeasserted. If not specified, the default is 100ms.",
+          "type": "integer",
+          "format": "uint64",
+          "default": 100,
+          "minimum": 0
+        }
+      },
+      "required": [
+        "enabled"
+      ]
+    },
+    "SerialResetMethod": {
+      "oneOf": [
+        {
+          "description": "Reset the device by asserting and deasserting DTR",
+          "type": "string",
+          "const": "dtr"
+        },
+        {
+          "description": "Reset the device by asserting and deasserting RTS",
+          "type": "string",
+          "const": "rts"
+        }
+      ]
+    },
+    "VirtualEnv": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "App",
+  "type": "object",
+  "properties": {
+    "description": {
+      "description": "Description of the app",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "devices": {
+      "description": "List of on-board devices enabled for the app",
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "string"
+      }
+    },
+    "name": {
+      "description": "Name of the app",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
