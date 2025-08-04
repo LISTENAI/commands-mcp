@@ -1,9 +1,10 @@
 use std::{collections::BTreeMap, path::PathBuf};
 
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
+#[allow(unused)]
 pub struct Manifest {
     /// A collection of commands
     pub commands: BTreeMap<String, CommandSpec>,
@@ -18,7 +19,8 @@ pub struct Manifest {
     pub schematic: Option<SchematicOptions>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
+#[allow(unused)]
 pub struct CommandSpec {
     /// A brief description of the command
     pub description: String,
@@ -42,7 +44,8 @@ pub struct CommandSpec {
     pub venv: VirtualEnv,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
+#[allow(unused)]
 pub struct ArgumentSpec {
     /// The name of the argument
     pub name: String,
@@ -63,7 +66,8 @@ pub struct ArgumentSpec {
     pub default: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
+#[allow(unused)]
 pub enum ArgumentType {
     /// String argument
     #[serde(rename = "string")]
@@ -78,7 +82,8 @@ pub enum ArgumentType {
     Boolean,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
+#[allow(unused)]
 #[serde(untagged)]
 pub enum VirtualEnv {
     UseDefault(bool),
@@ -91,7 +96,8 @@ impl Default for VirtualEnv {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
+#[allow(unused)]
 pub struct FlashOptions {
     /// Whether flash tools are enabled
     pub enabled: bool,
@@ -108,7 +114,7 @@ fn default_flash_baudrate() -> u32 {
     1500000
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub enum SerialResetMethod {
     /// Reset the device by asserting and deasserting DTR
     #[serde(rename = "dtr")]
@@ -119,7 +125,8 @@ pub enum SerialResetMethod {
     RTS,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
+#[allow(unused)]
 pub struct SerialOptions {
     /// Whether serial tools are enabled
     pub enabled: bool,
@@ -145,7 +152,8 @@ fn default_reset_interval() -> u64 {
     100
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
+#[allow(unused)]
 pub struct SchematicOptions {
     /// Whether schematic tools are enabled
     pub enabled: bool,

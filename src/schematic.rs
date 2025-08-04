@@ -1,9 +1,8 @@
-use std::str::FromStr;
-
 use schemars::JsonSchema;
-use serde::{Deserialize, Deserializer, Serialize, Serializer, de::Error};
+use serde::Deserialize;
 
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
+#[allow(unused)]
 pub struct Soc {
     /// Name of the SoC
     pub name: String,
@@ -20,20 +19,22 @@ pub struct Soc {
     pub pins: Vec<Pin>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
+#[allow(unused)]
 pub struct Pin {
     /// Name of the pin or pad (e.g., `GPIO0`, `PB2`)
     pub name: String,
 
     /// List of functions that the pin can perform
     ///
-    /// Can be names constructed with the format `<peripheral>.<signal>` (e.g.,
+    /// Can be names constructed with the format `peripheral.signal` (e.g.,
     /// `uart0.txd`, `i2c0.sda`) or just the function name (e.g., `gpio`, `pwm`).
     pub pinmux: Vec<Function>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, JsonSchema)]
-#[serde(untagged)]
+#[derive(Debug, Clone, Deserialize, PartialEq, Eq, JsonSchema)]
+#[serde(try_from = "&str")]
+#[allow(unused)]
 pub enum Function {
     /// A simple function that doesn't have explicit signal pins, e.g., `gpio`, `pwm`
     Simple(String),
@@ -51,41 +52,23 @@ impl ToString for Function {
     }
 }
 
-impl FromStr for Function {
-    type Err = String;
+impl TryFrom<&str> for Function {
+    type Error = String;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if let Some((name, signal)) = s.split_once('.') {
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        if let Some((name, signal)) = value.split_once('.') {
             Ok(Function::Peripheral {
-                name: name.to_string(),
-                signal: signal.to_string(),
+                name: name.into(),
+                signal: signal.into(),
             })
         } else {
-            Ok(Function::Simple(s.to_string()))
+            Ok(Function::Simple(value.into()))
         }
     }
 }
 
-impl Serialize for Function {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        serializer.serialize_str(&self.to_string())
-    }
-}
-
-impl<'de> Deserialize<'de> for Function {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let s = String::deserialize(deserializer)?;
-        Function::from_str(&s).map_err(|e| D::Error::custom(e))
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
+#[allow(unused)]
 pub struct Board {
     /// Name of the board
     pub name: String,
@@ -105,14 +88,15 @@ pub struct Board {
     pub exposes: Vec<Expose>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
+#[allow(unused)]
 pub struct Device {
     /// Name of the device
     pub name: String,
 
     /// Pins connected to the device
     ///
-    /// Each connection is represented as a string in the format `<pin_name>@<function>`,
+    /// Each connection is represented as a string in the format `pin_name@function`,
     /// e.g., `PB2@uart0.txd`.
     pub connects: Vec<Connection>,
 
@@ -125,7 +109,9 @@ pub struct Device {
     pub pins: Vec<Pin>,
 }
 
-#[derive(Debug, Clone, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
+#[serde(try_from = "&str")]
+#[allow(unused)]
 pub struct Connection {
     /// Name of the pin or pad (e.g., `GPIO0`, `PB2`), may be with a prefix to
     /// indicate the a IO expander (e.g., `expander1:GPIO0`)
@@ -141,68 +127,50 @@ impl ToString for Connection {
     }
 }
 
-impl FromStr for Connection {
-    type Err = String;
+impl TryFrom<&str> for Connection {
+    type Error = String;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.split('@').collect::<Vec<&str>>().as_slice() {
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value.split('@').collect::<Vec<&str>>().as_slice() {
             [net, function] if !net.is_empty() && !function.is_empty() => Ok(Connection {
-                net: Net::from_str(net)?,
-                function: Function::from_str(function)?,
+                net: Net::try_from(*net)?,
+                function: Function::try_from(*function)?,
             }),
             _ => Err("Invalid connection format".to_string()),
         }
     }
 }
 
-impl Serialize for Connection {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        serializer.serialize_str(&self.to_string())
-    }
-}
-
-impl<'de> Deserialize<'de> for Connection {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let s = String::deserialize(deserializer)?;
-        Connection::from_str(&s).map_err(|e| D::Error::custom(e))
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, JsonSchema)]
-#[serde(untagged)]
+#[derive(Debug, Clone, Deserialize, PartialEq, Eq, JsonSchema)]
+#[serde(try_from = "&str")]
+#[allow(unused)]
 pub enum Net {
     /// A net that directly connects to the SoC
-    DIRECT { pin: String },
+    Direct { pin: String },
 
     /// A net that connects through a device
-    DEVICE { device: String, pin: String },
+    Device { device: String, pin: String },
 }
 
 impl ToString for Net {
     fn to_string(&self) -> String {
         match self {
-            Net::DIRECT { pin } => pin.clone(),
-            Net::DEVICE { device, pin } => format!("{}:{}", device, pin),
+            Net::Direct { pin } => pin.clone(),
+            Net::Device { device, pin } => format!("{}:{}", device, pin),
         }
     }
 }
 
-impl FromStr for Net {
-    type Err = String;
+impl TryFrom<&str> for Net {
+    type Error = String;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.split(':').collect::<Vec<&str>>().as_slice() {
-            [device, pin] if !device.is_empty() && !pin.is_empty() => Ok(Net::DEVICE {
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value.split(':').collect::<Vec<&str>>().as_slice() {
+            [device, pin] if !device.is_empty() && !pin.is_empty() => Ok(Net::Device {
                 device: device.to_string(),
                 pin: pin.to_string(),
             }),
-            [pin] if !pin.is_empty() => Ok(Net::DIRECT {
+            [pin] if !pin.is_empty() => Ok(Net::Direct {
                 pin: pin.to_string(),
             }),
             _ => Err("Invalid net format".to_string()),
@@ -210,26 +178,8 @@ impl FromStr for Net {
     }
 }
 
-impl Serialize for Net {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        serializer.serialize_str(&self.to_string())
-    }
-}
-
-impl<'de> Deserialize<'de> for Net {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let s = String::deserialize(deserializer)?;
-        Net::from_str(&s).map_err(|e| D::Error::custom(e))
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
+#[allow(unused)]
 pub struct Expose {
     /// Name of the exposed connector (e.g., `CN1`, `J1`)
     pub name: String,
@@ -238,7 +188,8 @@ pub struct Expose {
     pub pins: Vec<Net>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
+#[allow(unused)]
 pub struct App {
     /// Name of the app
     pub name: String,

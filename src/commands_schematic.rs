@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, fmt::Debug, str::FromStr};
+use std::{collections::BTreeMap, fmt::Debug};
 
 use rmcp::{
     Error as McpError,
@@ -127,7 +127,7 @@ impl Commands {
         let board = Board::for_spec(&self)?;
         let soc = Soc::for_spec(&self, &board)?;
 
-        let net = Net::from_str(&pin)
+        let net = Net::try_from(pin.as_str())
             .map_err(|e| McpError::invalid_params(format!("Invalid pin format: {}", e), None))?;
 
         if !soc
@@ -371,7 +371,7 @@ impl Commands {
         let board = Board::for_spec(&self)?;
         let soc = Soc::for_spec(&self, &board)?;
 
-        let net = Net::from_str(&pin)
+        let net = Net::try_from(pin.as_str())
             .map_err(|e| McpError::invalid_params(format!("Invalid pin format: {}", e), None))?;
 
         let (_, pinmux) = soc

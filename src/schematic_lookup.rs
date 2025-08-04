@@ -6,7 +6,7 @@ impl Soc {
     pub fn nets(&self) -> impl Iterator<Item = (Net, &Vec<Function>)> {
         self.pins.iter().map(|pin| {
             (
-                Net::DIRECT {
+                Net::Direct {
                     pin: pin.name.clone(),
                 },
                 &pin.pinmux,
@@ -83,7 +83,7 @@ impl Device {
     pub fn nets(&self) -> impl Iterator<Item = (Net, &Vec<Function>)> {
         self.pins.iter().map(|pin| {
             (
-                Net::DEVICE {
+                Net::Device {
                     device: self.name.clone(),
                     pin: pin.name.clone(),
                 },
