@@ -137,8 +137,7 @@
         },
         "venv": {
           "description": "Whether to activate a Python Virtual Environment (venv) when executing\nthe command. If set to `true`, the venv will be activated from the path\n`.venv`. Can also be a path to a specific venv.",
-          "$ref": "#/$defs/VirtualEnv",
-          "default": false
+          "$ref": "#/$defs/VirtualEnv"
         }
       },
       "required": [

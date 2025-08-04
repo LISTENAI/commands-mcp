@@ -25,7 +25,6 @@
     "pins": {
       "description": "List of available pins on the SoC",
       "type": "array",
-      "default": [],
       "items": {
         "$ref": "#/$defs/Pin"
       }
@@ -36,28 +35,7 @@
   ],
   "$defs": {
     "Function": {
-      "anyOf": [
-        {
-          "description": "A simple function that doesn't have explicit signal pins, e.g., `gpio`, `pwm`",
-          "type": "string"
-        },
-        {
-          "description": "A function that is associated with a specific peripheral and signal, e.g., `uart0.txd`",
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "signal": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "name",
-            "signal"
-          ]
-        }
-      ]
+      "type": "string"
     },
     "Pin": {
       "type": "object",

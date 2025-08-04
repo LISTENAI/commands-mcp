@@ -13,7 +13,6 @@
     "devices": {
       "description": "List of devices on the board",
       "type": "array",
-      "default": [],
       "items": {
         "$ref": "#/$defs/Device"
       }
@@ -21,7 +20,6 @@
     "exposes": {
       "description": "List of pins that are exposed by the board",
       "type": "array",
-      "default": [],
       "items": {
         "$ref": "#/$defs/Expose"
       }
@@ -41,21 +39,7 @@
   ],
   "$defs": {
     "Connection": {
-      "type": "object",
-      "properties": {
-        "function": {
-          "description": "Function that the pin performs (e.g., `uart0.txd`, `i2c0.sda`)",
-          "$ref": "#/$defs/Function"
-        },
-        "net": {
-          "description": "Name of the pin or pad (e.g., `GPIO0`, `PB2`), may be with a prefix to\nindicate the a IO expander (e.g., `expander1:GPIO0`)",
-          "$ref": "#/$defs/Net"
-        }
-      },
-      "required": [
-        "net",
-        "function"
-      ]
+      "type": "string"
     },
     "Device": {
       "type": "object",
@@ -82,7 +66,6 @@
         "pins": {
           "description": "Optional pins that the device exposes",
           "type": "array",
-          "default": [],
           "items": {
             "$ref": "#/$defs/Pin"
           }
@@ -114,60 +97,10 @@
       ]
     },
     "Function": {
-      "anyOf": [
-        {
-          "description": "A simple function that doesn't have explicit signal pins, e.g., `gpio`, `pwm`",
-          "type": "string"
-        },
-        {
-          "description": "A function that is associated with a specific peripheral and signal, e.g., `uart0.txd`",
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "signal": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "name",
-            "signal"
-          ]
-        }
-      ]
+      "type": "string"
     },
     "Net": {
-      "anyOf": [
-        {
-          "description": "A net that directly connects to the SoC",
-          "type": "object",
-          "properties": {
-            "pin": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "pin"
-          ]
-        },
-        {
-          "description": "A net that connects through a device",
-          "type": "object",
-          "properties": {
-            "device": {
-              "type": "string"
-            },
-            "pin": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "device",
-            "pin"
-          ]
-        }
-      ]
+      "type": "string"
     },
     "Pin": {
       "type": "object",
