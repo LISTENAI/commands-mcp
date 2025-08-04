@@ -1,6 +1,6 @@
 [package]
 name = "commands-mcp"
-version = "0.13.1"
+version = "0.14.0"
 authors = ["xychen <xychen@listenai.com>"]
 edition = "2024"
 description = "Build MCP Server with command template"
