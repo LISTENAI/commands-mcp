@@ -33,6 +33,7 @@ pub struct Pin {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, JsonSchema)]
+#[serde(untagged)]
 pub enum Function {
     /// A simple function that doesn't have explicit signal pins, e.g., `gpio`, `pwm`
     Simple(String),
@@ -174,6 +175,7 @@ impl<'de> Deserialize<'de> for Connection {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, JsonSchema)]
+#[serde(untagged)]
 pub enum Net {
     /// A net that directly connects to the SoC
     DIRECT { pin: String },

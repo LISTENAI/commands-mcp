@@ -2,8 +2,8 @@ node_modules
 /binaries
 /dxt
 /target
+/schema
 /commands.yaml
-/commands.schema.json
 *.tgz
 *.dxt
 .venv

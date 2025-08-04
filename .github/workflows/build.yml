@@ -61,12 +61,12 @@ jobs:
           name: commands-mcp_${{ matrix.name }}
           path: target/${{ matrix.target }}/release/commands-mcp${{ matrix.suffix }}
 
-      - name: Archive schema.json
+      - name: Archive schema
         uses: actions/upload-artifact@v4
         if: matrix.name == 'linux-x64'
         with:
           name: schema
-          path: commands.schema.json
+          path: schema
 
   publish-npm:
     if: github.event_name == 'release'
@@ -134,7 +134,7 @@ jobs:
           name: dxt
           path: commands-mcp.dxt
 
-  schema-pack:
+  pack-schema:
     runs-on: ubuntu-latest
     needs: build
     if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/v'))
@@ -146,21 +146,25 @@ jobs:
           path: schema
           fetch-depth: 0
 
-      - name: Download schema.json
+      - name: Download schema
         uses: actions/download-artifact@v4
         with:
           name: schema
+          path: schema/${{ github.ref_name }}
 
       - name: Commit and push
         run: |
-          mv -v commands.schema.json schema/${{ github.ref_name }}.json
+          # For backward compatibility, we keep the old schema file path
+          if [[ ${{ github.ref_name }} == 'master' ]]; then
+            echo '{"$ref": "./master/commands.json"}' > schema/${{ github.ref_name }}.json
+          fi
           cd schema
           git config --local user.name "xychen"
           git config --local user.email "xychen@listenai.com"
           if [[ -z "$(git status --porcelain)" ]]; then
             echo "No changes to commit"
           else
-            git add ${{ github.ref_name }}.json
+            git add .
             git commit -m "Update schema for ${{ github.ref_name }}"
             git push
           fi
@@ -170,9 +174,9 @@ jobs:
         with:
           path: ${{ github.workspace }}
 
-  schema-deploy:
+  publish-schema:
     runs-on: ubuntu-latest
-    needs: schema-pack
+    needs: pack-schema
 
     environment:
       name: github-pages

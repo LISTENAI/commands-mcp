@@ -13,7 +13,7 @@ located at `schematic/socs/<soc_name>.yaml`.
 ### Example SoC file
 
 ```yaml
-# yaml-language-server: $schema=http://listenai.github.io/commands-mcp/schema/master/schematic-soc.json
+# yaml-language-server: $schema=https://listenai.github.io/commands-mcp/schema/master/schematic-soc.json
 # AI assistance: Use schematic_* tools instead of directly reading this file.
 
 name: csk6011a
@@ -78,7 +78,7 @@ at `schematic/boards/<board_name>.yaml`.
 ### Example board file
 
 ```yaml
-# yaml-language-server: $schema=http://listenai.github.io/commands-mcp/schema/master/schematic-board.json
+# yaml-language-server: $schema=https://listenai.github.io/commands-mcp/schema/master/schematic-board.json
 # AI assistance: Use schematic_* tools instead of directly reading this file.
 
 name: csk6_duomotai_devkit
@@ -151,7 +151,7 @@ the app directory named `schematic.yaml`.
 ### Example app file
 
 ```yaml
-# yaml-language-server: $schema=http://listenai.github.io/commands-mcp/schema/master/schematic-app.json
+# yaml-language-server: $schema=https://listenai.github.io/commands-mcp/schema/master/schematic-app.json
 # AI assistance: Use schematic_* tools instead of directly reading this file.
 
 name: my_app

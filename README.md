@@ -27,7 +27,7 @@ Add the following to your `claude_desktop_config.json`:
 A `commands.yaml` file should be placed in the root of your project. Here's an example:
 
 ```yaml
-# yaml-language-server: $schema=http://listenai.github.io/commands-mcp/schema/master.json
+# yaml-language-server: $schema=https://listenai.github.io/commands-mcp/schema/master/commands.json
 
 commands:
   zephyr_build:
