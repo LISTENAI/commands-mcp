@@ -36,43 +36,25 @@
   ],
   "$defs": {
     "Function": {
-      "oneOf": [
+      "anyOf": [
         {
           "description": "A simple function that doesn't have explicit signal pins, e.g., `gpio`, `pwm`",
-          "type": "object",
-          "properties": {
-            "Simple": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "Simple"
-          ]
+          "type": "string"
         },
         {
           "description": "A function that is associated with a specific peripheral and signal, e.g., `uart0.txd`",
           "type": "object",
           "properties": {
-            "Peripheral": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "signal": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "name",
-                "signal"
-              ]
+            "name": {
+              "type": "string"
+            },
+            "signal": {
+              "type": "string"
             }
           },
-          "additionalProperties": false,
           "required": [
-            "Peripheral"
+            "name",
+            "signal"
           ]
         }
       ]

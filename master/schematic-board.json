@@ -114,93 +114,57 @@
       ]
     },
     "Function": {
-      "oneOf": [
+      "anyOf": [
         {
           "description": "A simple function that doesn't have explicit signal pins, e.g., `gpio`, `pwm`",
-          "type": "object",
-          "properties": {
-            "Simple": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "Simple"
-          ]
+          "type": "string"
         },
         {
           "description": "A function that is associated with a specific peripheral and signal, e.g., `uart0.txd`",
           "type": "object",
           "properties": {
-            "Peripheral": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "signal": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "name",
-                "signal"
-              ]
+            "name": {
+              "type": "string"
+            },
+            "signal": {
+              "type": "string"
             }
           },
-          "additionalProperties": false,
           "required": [
-            "Peripheral"
+            "name",
+            "signal"
           ]
         }
       ]
     },
     "Net": {
-      "oneOf": [
+      "anyOf": [
         {
           "description": "A net that directly connects to the SoC",
           "type": "object",
           "properties": {
-            "DIRECT": {
-              "type": "object",
-              "properties": {
-                "pin": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "pin"
-              ]
+            "pin": {
+              "type": "string"
             }
           },
-          "additionalProperties": false,
           "required": [
-            "DIRECT"
+            "pin"
           ]
         },
         {
           "description": "A net that connects through a device",
           "type": "object",
           "properties": {
-            "DEVICE": {
-              "type": "object",
-              "properties": {
-                "device": {
-                  "type": "string"
-                },
-                "pin": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "device",
-                "pin"
-              ]
+            "device": {
+              "type": "string"
+            },
+            "pin": {
+              "type": "string"
             }
           },
-          "additionalProperties": false,
           "required": [
-            "DEVICE"
+            "device",
+            "pin"
           ]
         }
       ]
