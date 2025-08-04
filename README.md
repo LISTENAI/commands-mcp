@@ -113,6 +113,22 @@ serial:
                         # asserted and deasserted, defaults to 100ms.
 ```
 
+### Schematic tools
+
+Built-in tools to help the AI better understand the hardware schematic of the board.
+For details about the schematic files, see the [Schematic](docs/schematic.md).
+
+```yaml
+schematic:
+  enabled: true                 # Enable schematic tools
+  board: csk6_duomotai_devkit   # Board name, should match the board file defined
+                                # in `boards_dir`.
+  socs_dir: schematic/socs      # Directory containing SoC-level schematic
+                                # definitions. Defaults to "schematic/socs".
+  boards_dir: schematic/boards  # Directory containing board-level schematic
+                                # definitions. Defaults to "schematic/boards".
+```
+
 ## License
 
 [Apache-2.0](LICENSE)
