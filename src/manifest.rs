@@ -17,6 +17,9 @@ pub struct Manifest {
 
     /// Schematic options for the manifest
     pub schematic: Option<SchematicOptions>,
+
+    /// Inspector options for the manifest
+    pub inspector: Option<InspectorOptions>,
 }
 
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
@@ -176,4 +179,11 @@ fn default_socs_dir() -> PathBuf {
 
 fn default_boards_dir() -> PathBuf {
     "schematic/boards".into()
+}
+
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
+#[allow(unused)]
+pub struct InspectorOptions {
+    /// Whether inspector tools are enabled
+    pub enabled: bool,
 }
