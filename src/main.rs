@@ -1,8 +1,11 @@
 mod commands;
 mod commands_flash;
+mod commands_inspector;
 mod commands_schematic;
 mod commands_serial;
 mod error;
+mod inspector;
+mod inspector_device;
 mod manifest;
 mod manifest_executor;
 mod manifest_reader;

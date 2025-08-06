@@ -46,6 +46,12 @@ impl Commands {
             tool_router.merge(Self::schematic_router());
         }
 
+        if let Some(opts) = &manifest.inspector
+            && opts.enabled
+        {
+            tool_router.merge(Self::inspector_router());
+        }
+
         Self {
             tool_router,
             cwd,
